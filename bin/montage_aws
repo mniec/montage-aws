@@ -1,2 +1,15 @@
 #!/usr/bin/env ruby
-puts "hello"
+require "rubygems" 
+require "thor"
+
+class MontageAWS < Thor
+  desc "start_decider", "starts decider daemon"
+  def start_decider
+    puts "starting decider daemon"
+    
+  end
+end
+
+MontageAWS.start
+
+
