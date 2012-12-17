@@ -11,11 +11,11 @@ module MontageAWS
 
       domain = swf.domains.create(@config.domain)
       
-      workflow = create_workflow 'montage_aws', vsn, 'default'
+      workflow = create_workflow('montage_aws', vsn, 
+                                 @config.default_task_list, domain)
 
-      create_activity 'provision', vsn, 'provision-tasks'
-      create_activity 'compute', vsn, 'compute-tasks'
-
+      create_activity('provision', vsn, 'provision-tasks', domain)
+      create_activity('compute', vsn, 'compute-tasks', domain)
     end
     
     private

@@ -21,8 +21,7 @@ describe Provision do
   end
 
   describe "#execute" do 
-
-    it "should create a new domain" do
+    it "should create a new domain with new activites types" do
       p1 = Provision.new :params => [], :options => {}, 
       :config => @config, :logger => $stderr, :aws => @aws
       
