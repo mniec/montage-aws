@@ -14,13 +14,13 @@ describe Tasks do
 
   describe ".validate" do
     it "should return true to valid spec" do
-      r = Tasks.validate({:valid =>Sth, :valid1=>Sth})
+      r = Tasks.validate({:valid =>Sth, :valid1=>Sth1})
       r.should be_true
     end
 
     it "should return false to invalid spec" do
       [{:ala=>"ASD"},{"asdf"=>Sth1},{"asdf"=>1}].each do |e|
-        r = Tasks.validate({"invalid"=>Sth1})
+        r = Tasks.validate(e)
         r.should be_false
       end
     end
