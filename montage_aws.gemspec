@@ -8,6 +8,10 @@ Gem::Specification.new do |s|
   s.email       = 'michalniec@gmail.com'
   s.files       = `git ls-files`.split("\n")
   s.executables = `git ls-files`.split("\n").map{|f| f =~ /^bin\/(.*)/ ? $1 : nil}.compact
-  s.homepage    =
-    'https://www.git.npspace.pl/awscomp'
+  s.homepage    = 'https://www.git.npspace.pl/awscomp'
+
+  s.add_dependency('aws-sdk', '=1.7.1')
+
+  s.add_development_dependency('rspec')
+  s.add_development_dependency('guard')
 end
