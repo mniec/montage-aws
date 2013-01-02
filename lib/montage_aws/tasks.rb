@@ -26,7 +26,13 @@ module MontageAWS
     def create_from_cmd cmd
       klass = @available_tasks[cmd.task]
       raise "No such task available" if klass.nil?
-      klass.new cmd.params, cmd.options
+      klass.new :params => cmd.params, :options => cmd.options
+    end
+
+    def from_decision_event event
+      klass = @available_tasks[event.event_type.to_sym]
+      raise "No such task available" if klass.nil?
+      klass.new :event => event
     end
     
     private

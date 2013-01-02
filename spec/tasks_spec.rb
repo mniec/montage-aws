@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 class Sth
-  def initialize params, options
+  def initialize params
   end
 end
 
 class Sth1
-  def initialize params, options
+  def initialize params
   end
 end
 
@@ -44,9 +44,7 @@ describe Tasks do
   end
 
   describe "#create_from_cmd" do
-    before(:each) do 
-      @task = Tasks.new({:sth => Sth, :sth1 => Sth1})
-    end
+    subject{ Tasks.new({:sth => Sth, :sth1 => Sth1}) }
 
     it "should check if generates valid task instance from cmd" do
       cmd = double("cmd")
@@ -54,14 +52,36 @@ describe Tasks do
       cmd.should_receive(:params) { ["hello", "hello"] }
       cmd.should_receive(:options) { { :p => "1" } }
 
-      sth = @task.create_from_cmd cmd
+      sth = subject.create_from_cmd cmd
+      sth.should_not be_nil
     end
     
     it "should raise error if there is no such task available" do
       cmd = double("cmd")
       cmd.should_receive(:task) { :sth2 }
-      lambda { @task.create_from_cmd(cmd) }.should raise_error(RuntimeError, "No such task available")
+      lambda { subject.create_from_cmd(cmd) }.should raise_error(RuntimeError, "No such task available")
+    end    
+  end
+  
+  describe "#from_decision_event" do
+    subject{ Tasks.new({:sth => Sth, :sth1 => Sth1}) }
+
+    it "should check for event type" do
+      event = double("event")
+      event.should_receive(:event_type){"sth1"}
+      task = subject.from_decision_event event
     end
-    
+    it 'should fail if there is no class associated with particular event' do
+      event =double("event")
+      event.should_receive(:event_type){"NotExisting"}
+      lambda { subject.from_decision_event event}.should raise_error(RuntimeError, "No such task available")
+    end
+    it "should create a valid task" do 
+      event = double("event")
+      event.stub(:event_type).and_return("sth")
+      task = subject.from_decision_event event
+      task.should_not be_nil
+      task.should be_an_instance_of Sth
+    end
   end
 end
