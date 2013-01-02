@@ -25,7 +25,7 @@ module MontageAWS
     def create_activity name, vsn, task_list, domain
       domain.activity_types.create(name,
                                    vsn,
-                                   :default_task_list => 'compute')
+                                   :default_task_list => task_list)
     end
 
     def create_workflow name, vsn, task_list, domain
