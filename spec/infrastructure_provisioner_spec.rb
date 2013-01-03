@@ -13,9 +13,6 @@ describe InfrastructureProvisioner do
 
 	describe ".new" do
 		it "should accept params, options, config, logger" do 
-			@params = []
-			@options = {}
-
 			subject.should_not be_nil
 		end
 	end
