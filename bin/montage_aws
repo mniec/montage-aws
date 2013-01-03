@@ -11,7 +11,7 @@ def setup_aws config
   AWS.config(config[:aws])
 end
 
-def create_swf 
+def create_swf
   AWS::SimpleWorkflow.new
 end
 
@@ -43,19 +43,17 @@ def create_tasks_factory config, swf, ec2
   Tasks.new spec, :config => config, :swf=> swf, :ec2=> ec2
 end
 
-if __FILE__ == $PROGRAM_NAME
-  @config = create_config
-  puts @config.inspect
-  setup_aws @config
-  @swf = create_swf
-  @ec2 = create_ec2 
-  @tasks = create_tasks_factory @config, @swf, @ec2
+@config = create_config
+puts @config.inspect
+setup_aws @config
+@swf = create_swf
+@ec2 = create_ec2
+@tasks = create_tasks_factory @config, @swf, @ec2
 
-  begin
-    cmd = Cmd.new ARGV
-    @task = @tasks.create_from_cmd cmd
-    @task.execute
-  rescue RuntimeError => e
-    $stderr.puts "error: #{e.message}"
-  end
+begin
+  cmd = Cmd.new ARGV
+  @task = @tasks.create_from_cmd cmd
+  @task.execute
+rescue RuntimeError => e
+  $stderr.puts "error: #{e.message}"
 end
