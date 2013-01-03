@@ -1,10 +1,11 @@
 module MontageAWS
   class Tasks
-    attr_accessor :available_tasks
+    attr_accessor :available_tasks, :params
 
-    def initialize tasks
+    def initialize tasks, params
       self.class.validate! tasks
       @available_tasks = tasks
+      @params = params
     end
 
     def self.validate! spec
@@ -26,13 +27,15 @@ module MontageAWS
     def create_from_cmd cmd
       klass = @available_tasks[cmd.task]
       raise "No such task available" if klass.nil?
-      klass.new :params => cmd.params, :options => cmd.options
+      args = { :params => cmd.params, :options => cmd.options }
+      klass.new(args.merge(@params))
     end
 
     def from_decision_event event
       klass = @available_tasks[event.event_type.to_sym]
       raise "No such task available" if klass.nil?
-      klass.new :event => event
+      
+      klass.new({:event => event}.merge(@params))
     end
     
     private
@@ -50,5 +53,4 @@ module MontageAWS
     end
 
   end
-
 end

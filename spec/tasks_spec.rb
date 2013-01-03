@@ -11,7 +11,13 @@ class Sth1
 end
 
 describe Tasks do
-
+  before(:each) do
+    @config = double('config')
+    @swf = double('swf')
+    @ec2 = double('ec2')
+    
+    @args = {:config => @config, :swf => @swf, :ec2 => @ec2}
+  end
   describe ".validate" do
     it "should return true to valid spec" do
       r = Tasks.validate({:valid =>Sth, :valid1=>Sth1})
@@ -27,24 +33,24 @@ describe Tasks do
   end
 
   describe ".new" do
-    it "should get definitions of available tasks" do
+    it "should get definitions of available tasks, config swf and ec2" do
       available_tasks = {:sth=>Sth,:sth1=>Sth1}
-      tasks = Tasks.new available_tasks
+      tasks = Tasks.new available_tasks, :config => @config, :swf => @swf, :ec2 => @ec2
       tasks.should_not be_nil
       tasks.available_tasks.should_not be_nil
     end
 
     it "should throw error if task name is not a symbol" do
-      lambda { Tasks.new({"dupa"=> Sth }) }.should raise_error(ArgumentError)
+      lambda { Tasks.new({"dupa"=> Sth }, :config => @config, :swf=>@swf, :ec2 => @ec2) }.should raise_error(ArgumentError)
     end
 
     it "should throw error if task class is not valid" do
-      lambda { Tasks.new({:dupa => "Sth1" }) }.should raise_error(ArgumentError)
+      lambda { Tasks.new({:dupa => "Sth1" }, :config => @config, :swf=>@swf, :ec2=> @ec2) }.should raise_error(ArgumentError)
     end
   end
 
   describe "#create_from_cmd" do
-    subject{ Tasks.new({:sth => Sth, :sth1 => Sth1}) }
+    subject{ Tasks.new({:sth => Sth, :sth1 => Sth1}, :config=> @config, :swf=>@swf, :ec2=>@ec2) }
 
     it "should check if generates valid task instance from cmd" do
       cmd = double("cmd")
@@ -64,7 +70,7 @@ describe Tasks do
   end
   
   describe "#from_decision_event" do
-    subject{ Tasks.new({:sth => Sth, :sth1 => Sth1}) }
+    subject{ Tasks.new({:sth => Sth, :sth1 => Sth1}, :config=> @config, :swf=> @swf, :ec2=>@ec2) }
 
     it "should check for event type" do
       event = double("event")
