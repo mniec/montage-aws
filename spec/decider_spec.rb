@@ -18,8 +18,8 @@ describe Decider do
 
   describe "#execute" do
     it "should pool for tasks" do
-      @config.should_receive(:domain) {'test1'}
-      @config.should_receive(:default_task_list) {'task_list'}
+      @config.should_receive(:[]).with(:domain) {'test1'}
+      @config.should_receive(:[]).with(:default_task_list) {'task_list'}
       
       decision_tasks = double('decision_tasks')
       decision_tasks.should_receive(:poll).and_yield(nil)

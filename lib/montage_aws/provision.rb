@@ -7,13 +7,13 @@ module MontageAWS
     
     def execute
       swf = @aws.new
-      vsn = @config.workflow_version
+      vsn = @config[:workflow_version]
 
-      domain = swf.domains.create(@config.domain)
+      domain = swf.domains.create(@config[:domain])
       
-      workflow = create_workflow(@config.workflow_name, 
+      workflow = create_workflow(@config[:workflow_name], 
                                  vsn, 
-                                 @config.default_task_list, 
+                                 @config[:default_task_list], 
                                  domain)
 
       create_activity('provision', vsn, 'provision-tasks', domain)

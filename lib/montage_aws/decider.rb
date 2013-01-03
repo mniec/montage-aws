@@ -7,7 +7,7 @@ module MontageAWS
     end
     
     def execute
-      @swf.domains[@config.domain].decision_tasks.poll(@config.default_task_list) do |task|
+      @swf.domains[@config[:domain]].decision_tasks.poll(@config[:default_task_list]) do |task|
         execute_task task
       end
     end

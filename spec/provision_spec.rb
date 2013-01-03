@@ -25,10 +25,10 @@ describe Provision do
       p1 = Provision.new :params => [], :options => {}, 
       :config => @config, :logger => $stderr, :aws => @aws
       
-      @config.should_receive(:domain) { 'test1' }
-      @config.should_receive(:default_task_list){ 'main' }
-      @config.should_receive(:workflow_name){ 'test_wf' }
-      @config.should_receive(:workflow_version){ '1' }.at_least(:once)
+      @config.should_receive(:[]).with(:domain) { 'test1' }
+      @config.should_receive(:[]).with(:default_task_list){ 'main' }
+      @config.should_receive(:[]).with(:workflow_name){ 'test_wf' }
+      @config.should_receive(:[]).with(:workflow_version) { '1' }.at_least(:once)
       
       workflow_types = double('workflow_types')
       workflow_types.should_receive(:create)
