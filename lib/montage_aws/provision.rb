@@ -1,19 +1,18 @@
 module MontageAWS
   class Provision
     def initialize params
-      @aws = params[:aws]
+      @swf = params[:swf]
       @config = params[:config]
     end
     
     def execute
-      swf = @aws.new
-      vsn = @config.workflow_version
+      vsn = @config[:workflow_version]
 
-      domain = swf.domains.create(@config.domain)
+      domain = @swf.domains.create(@config[:domain], 10)
       
-      workflow = create_workflow(@config.workflow_name, 
+      workflow = create_workflow(@config[:workflow_name], 
                                  vsn, 
-                                 @config.default_task_list, 
+                                 @config[:default_task_list], 
                                  domain)
 
       create_activity('provision', vsn, 'provision-tasks', domain)
@@ -25,7 +24,7 @@ module MontageAWS
     def create_activity name, vsn, task_list, domain
       domain.activity_types.create(name,
                                    vsn,
-                                   :default_task_list => 'compute')
+                                   :default_task_list => task_list)
     end
 
     def create_workflow name, vsn, task_list, domain
