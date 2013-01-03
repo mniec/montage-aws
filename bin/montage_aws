@@ -1,3 +1,61 @@
 #!/usr/bin/env ruby
-puts "Hello Amazon SWF!"
+require 'montage_aws'
+require 'yaml'
+require 'aws'
 
+CONFIG_FILE="#{ENV['HOME']}/.montage_aws.yml"
+
+include MontageAWS
+
+def setup_aws config
+  AWS.config(config[:aws])
+end
+
+def create_swf 
+  AWS::SimpleWorkflow.new
+end
+
+def create_ec2
+  AWS::EC2.new
+end
+
+def create_config
+  default_config = {
+    :domain => "montage_aws",
+    :workflow_name => "mock_computation",
+    :workflow_version => "0.0.1",
+    :default_task_list => "computation-task-list",
+  }
+  if File.exists? CONFIG_FILE
+    @config = YAML.load File.open(CONFIG_FILE)
+  else
+    @config = default_config
+  end
+end
+
+
+def create_tasks_factory config, swf, ec2
+  #init task factory
+  spec = {
+    :setup => Provision,
+  }
+  Tasks.validate! spec
+  Tasks.new spec, :config => config, :swf=> swf, :ec2=> ec2
+end
+
+if __FILE__ == $PROGRAM_NAME
+  @config = create_config
+  puts @config.inspect
+  setup_aws @config
+  @swf = create_swf
+  @ec2 = create_ec2 
+  @tasks = create_tasks_factory @config, @swf, @ec2
+
+  begin
+    cmd = Cmd.new ARGV
+    @task = @tasks.create_from_cmd cmd
+    @task.execute
+  rescue RuntimeError => e
+    $stderr.puts "error: #{e.message}"
+  end
+end
