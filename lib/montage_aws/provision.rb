@@ -1,15 +1,14 @@
 module MontageAWS
   class Provision
     def initialize params
-      @aws = params[:aws]
+      @swf = params[:swf]
       @config = params[:config]
     end
     
     def execute
-      swf = @aws.new
       vsn = @config[:workflow_version]
 
-      domain = swf.domains.create(@config[:domain])
+      domain = @swf.domains.create(@config[:domain], 10)
       
       workflow = create_workflow(@config[:workflow_name], 
                                  vsn, 

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Provision do
   before(:each) do 
     
-    @aws = double('aws')
+    @swf = double('swf')
     @config = double('config')
 
   end
@@ -13,7 +13,7 @@ describe Provision do
       @params = []
       @options = {}
       p1 = Provision.new  :params => @params, :options => @options, 
-      :logger => $stderr, :config=>@config, :aws => @aws 
+      :logger => $stderr, :config=>@config, :swf => @swf
       
       p1.should_not be_nil
     end
@@ -23,7 +23,7 @@ describe Provision do
   describe "#execute" do 
     it "should create a new domain with new activites types" do
       p1 = Provision.new :params => [], :options => {}, 
-      :config => @config, :logger => $stderr, :aws => @aws
+      :config => @config, :logger => $stderr, :swf => @swf
       
       @config.should_receive(:[]).with(:domain) { 'test1' }
       @config.should_receive(:[]).with(:default_task_list){ 'main' }
@@ -43,10 +43,8 @@ describe Provision do
       domains = double('domains')
       domains.should_receive(:create){ domain }
 
-      swf = double('swf')
-      swf.should_receive(:domains){ domains }
+      @swf.should_receive(:domains){ domains }
 
-      @aws.should_receive(:new){ swf }
       p1.execute
     end
   end
