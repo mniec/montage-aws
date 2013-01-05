@@ -18,6 +18,7 @@ describe Compute do
     @swf.stub(:domains){ @domains }
 
     @config = double('config')
+    @config.stub :[]
   end
 
   describe ".new" do
@@ -47,14 +48,32 @@ describe Compute do
     end
 
     describe "if valid cords are given" do
-      subject { Compute.new :params => ["1", "1"], :swf=>@swf, :config=>@config }
+      subject { Compute.new :params => ["1", "1"], :options=> {}, :swf=>@swf, :config=>@config }
       it "should start workflow" do
         @config.should_receive(:[]).with(:workflow_name)
         @config.should_receive(:[]).with(:workflow_version)
         @config.should_receive(:[]).with(:domain)
-        @workflow_type.should_receive(:start_execution).with({:input => "1 1"})
+        @workflow_type.should_receive(:start_execution).with({:input => "1 1 2"})
 
         subject.execute
+      end
+
+      describe "should make use of the '--machines' option" do
+
+        it "should check if machines param can be parsed as integer" do
+          c = Compute.new :params => ["1", "1"],
+          :options => {:machines => "10z"}, :swf=>@swf, :config=> @config
+          lambda { c.compute }.should raise_error
+          
+        end
+        it "should pass machines number as a 3rd argument to workflow input" do
+          @workflow_type.should_receive(:start_execution).with(:input => "1 1 10")
+          c = Compute.new :params => ["1", "1"],
+          :options => {:machines => "10"}, :swf=>@swf, :config=> @config
+          c.execute
+        end
+
+
       end
     end
 
