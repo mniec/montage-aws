@@ -24,7 +24,11 @@ module MontageAWS
     def create_activity name, vsn, task_list, domain
       domain.activity_types.create(name,
                                    vsn,
-                                   :default_task_list => task_list)
+                                   :default_task_list => task_list,
+                                   :default_task_start_to_close_timeout => :none,
+                                   :default_task_heartbeat_timeout => :none,
+                                   :default_task_schedule_to_start_timeout => :none,
+                                   :default_task_schedule_to_close_timeout => :none)
     end
 
     def create_workflow name, vsn, task_list, domain

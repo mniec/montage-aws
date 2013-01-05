@@ -38,7 +38,8 @@ def create_tasks_factory config, swf, ec2
   #init task factory
   spec = {
     :setup => Provision,
-    :start => Compute
+    :start => Compute,
+    :start_daemon => Decider
   }
   Tasks.validate! spec
   Tasks.new spec, :config => config, :swf=> swf, :ec2=> ec2
