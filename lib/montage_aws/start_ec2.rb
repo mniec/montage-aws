@@ -14,10 +14,8 @@ module MontageAWS
 
             if params[:ssh].nil?
                 @ssh = Net::SSH
-                @sftp = Net::SFTP
                 @WAIT_TIME = 2
             else #for testing 
-                @sftp = params[:sftp]
                 @ssh = params[:ssh]
                 @WAIT_TIME = 0 
             end 

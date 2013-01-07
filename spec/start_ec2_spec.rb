@@ -35,16 +35,18 @@ describe StartEc2 do
 			@config.should_receive(:[]).with(:ami_id).and_return('ami-7542c01c')
 			@config.should_receive(:[]).with(:key_pair_priv).and_return('identity.pem')
 			@config.should_receive(:[]).with(:region){'us-east-1a'}
-			@config.should_receive(:[]).with(:user_name){user_name}
+			@config.should_receive(:[]).with(:user_name).at_least(:once){user_name}
+			@config.should_receive(:[]).with(:montage_gem_file).at_least(:once){'/home/pawel/Code/awscomp/montage.gem'}
 
 
 			instance = double('instance')
 			instance.should_receive('start')
-			instance.should_receive('ip_address'){ip}
+			instance.should_receive('ip_address').at_least(:once){ip}
 			instance.should_receive('status').and_return(:stopped,:stopped, :pending, :running)
 			instance.should_receive('image_id'){'ami-7542c01c'}
 			instance.should_receive('availability_zone'){'us-east-1a'}
 			instance.should_receive('key_name'){'montage_key'}
+			instance.should_receive('id'){'i-123812'}
 
 			instances = double('instances')
 			
@@ -52,10 +54,21 @@ describe StartEc2 do
 
 			@ec2.should_receive('instances') {instances}
 		
+			sftp = double('sftp')
+			sftp.should_receive('upload!').twice
+
+			sftp.should_receive('connect') do |&c| 
+				c.call sftp
+			end 
+
+			install_gem_cmd = "sudo gem install --no-ri --no-rdoc montage_aws-0.0.1.gem"
 			command = "montage_aws start_decider"
+
 			session = double('session')
+			session.should_receive('exec!').with(install_gem_cmd)
 			session.should_receive('exec!').with(command)
 			session.should_receive('close')
+			session.should_receive('sftp'){sftp}
 
 			@ssh.should_receive('start').with(ip,user_name,:keys => ['identity.pem']).and_return(session)
 
