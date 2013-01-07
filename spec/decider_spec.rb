@@ -6,10 +6,13 @@ describe Decider do
     @config = double('config')
     @config.stub(:[]) { "conf" }
     @tasks = double('tasks')
+    @logger = double(:puts=>true)
+    @montage_helper = double(:divide=>[])
   end
 
   subject { Decider.new :params=> [], :options => {},
-    :config => @config, :logger => $stderr, :swf => @swf, :tasks=>@tasks}
+    :config => @config, :logger => @logger, :swf => @swf, 
+    :tasks=>@tasks, :montage_helper=> @montage_helper}
 
   describe ".new" do
     it "should accept params, options, config, logger" do
@@ -74,12 +77,25 @@ describe Decider do
     it "should schedule provision EC2" do
       @event.stub(:event_type).and_return("WorkflowExecutionStarted")
       attrs = double('attributes')
-      attrs.should_receive(:[]) { "1 1 10" }
+      attrs.should_receive(:[]) { "33.3 33.3 1 1 10" }
       @event.stub(:attributes) { attrs }
 
       @task.should_receive(:schedule_activity_task).with({:name=> "provision", :version => "conf"}).exactly(10)
-
-      subject.handle_workflow_start @event, @task
+      @montage_helper.should_receive(:divide).with(33.3, 33.3, 1.0, 1.0, 10) { ["file1\nfile2", "file3\nfile4"] }
+      @task.should_receive(:schedule_activity_task).with({:name=>"project", :version=>"conf"},{:input=>"file1\nfile2"})
+      @task.should_receive(:schedule_activity_task).with({:name=>"project", :version=>"conf"},{:input=>"file3\nfile4"})
+      subject.handle_workflow_start(@event, @task)
     end
   end
+  
+  describe "#check" do
+    
+  end
+
+  describe "#check_if_schedule_add" do
+    it "should return true if all add task have been done" do
+      
+    end
+  end
+
 end
