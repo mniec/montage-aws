@@ -5,9 +5,7 @@ describe MontageHelper do
   end
 
   subject do
-    a = Object.new 
-    a.extend MontageHelper
-    a
+    MontageHelper.new 
   end
 
   describe "#divide" do
