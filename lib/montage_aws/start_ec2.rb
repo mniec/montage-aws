@@ -10,6 +10,10 @@ module MontageAWS
             @logger = params[:logger]
             @ssh = params[:ssh]
             @ssh = Net::SSH  if params[:ssh].nil?
+
+            @WAIT_TIME = 2 
+            @WAIT_TIME = 0 if params[:ssh].nil?
+
         end 
 
         def start_and_execute_cmd command 
@@ -20,11 +24,9 @@ module MontageAWS
                 instance.start
 
                 while instance.status != :running
-                    puts "waiting for instance to start | status #{instance.status}"
-                    sleep(2)
+                    sleep(@WAIT_TIME)
                 end 
-
-                sleep(3)
+                sleep(@WAIT_TIME)
 
                 #puts "#{@config[:user_name]}  and key #{@config[:key_pair]} on addr #{instance.ip_address}"
                 session = @ssh.start(instance.ip_address,@config[:user_name],:keys => [@config[:key_pair]])

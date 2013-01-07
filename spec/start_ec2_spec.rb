@@ -38,7 +38,7 @@ describe StartEc2 do
 			instance = double('instance')
 			instance.should_receive('start')
 			instance.should_receive('ip_address'){ip}
-			instance.should_receive('status'){:stopped}
+			instance.should_receive('status').and_return(:stopped,:stopped, :pending, :running)
 			instance.should_receive('image_id'){'ami-7542c01c'}
 			instance.should_receive('availability_zone'){'us-east-1a'}
 
@@ -50,7 +50,7 @@ describe StartEc2 do
 		
 			command = "montage_aws start_decider"
 			session = double('session')
-			session.should_receive('exec').with(command)
+			session.should_receive('exec!').with(command)
 			session.should_receive('close')
 
 			@ssh.should_receive('start').with(ip,user_name,:keys => ['identity.pub']).and_return(session)
