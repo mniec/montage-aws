@@ -38,6 +38,13 @@ module MontageAWS
       klass.new({:event => event}.merge(@params))
     end
     
+    def from_worker_task activity_task
+      klass = @available_tasks[activity_task.activity_type.name.to_sym]
+      raise "No such task available" if klass.nil?
+      
+      klass.new({:activity_task => activity_task}.merge(@params))
+    end
+    
     private
 
     def self.valid_task_name? name

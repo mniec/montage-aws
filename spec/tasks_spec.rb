@@ -36,7 +36,7 @@ describe Tasks do
   describe ".new" do
     it "should get definitions of available tasks, config swf and ec2" do
       available_tasks = {:sth=>Sth,:sth1=>Sth1}
-      tasks = Tasks.new available_tasks, :config => @config, :swf => @swf, :ec2 => @ec2
+      tasks = Tasks.new(available_tasks, @args)
       tasks.should_not be_nil
       tasks.available_tasks.should_not be_nil
     end
@@ -51,7 +51,7 @@ describe Tasks do
   end
 
   describe "#create_from_cmd" do
-    subject{ Tasks.new({:sth => Sth, :sth1 => Sth1}, :config=> @config, :swf=>@swf, :ec2=>@ec2) }
+    subject{ Tasks.new({:sth => Sth, :sth1 => Sth1}, @args) }
 
     it "should check if generates valid task instance from cmd" do
       cmd = double("cmd")
@@ -71,7 +71,7 @@ describe Tasks do
   end
   
   describe "#from_decision_event" do
-    subject{ Tasks.new({:sth => Sth, :sth1 => Sth1}, :config=> @config, :swf=> @swf, :ec2=>@ec2) }
+    subject{ Tasks.new({:sth => Sth, :sth1 => Sth1}, @args) }
 
     it "should check for event type" do
       event = double("event")
@@ -90,5 +90,21 @@ describe Tasks do
       task.should_not be_nil
       task.should be_an_instance_of Sth
     end
+  end
+  
+  describe "#from_worker_task" do 
+    subject do
+      Tasks.new({:project => Sth1}, @args)
+    end
+    it "should generate valid project task from passed activity obj" do 
+      activity_type = double('activity_type')
+      activity_type.should_receive(:name){"project"}
+
+      activity_task = double('activity_task')
+      activity_task.should_receive(:activity_type){activity_type}
+
+      task = subject.from_worker_task activity_task
+    end
+    
   end
 end
