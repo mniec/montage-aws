@@ -12,7 +12,7 @@ module MontageAWS
             @ssh = Net::SSH  if params[:ssh].nil?
 
             @WAIT_TIME = 2 
-            @WAIT_TIME = 0 if params[:ssh].nil?
+            @WAIT_TIME = 0 unless params[:ssh].nil?
 
         end 
 
@@ -23,10 +23,7 @@ module MontageAWS
             unless instance.nil?
                 instance.start
 
-                while instance.status != :running
-                    sleep(@WAIT_TIME)
-                end 
-                sleep(@WAIT_TIME)
+                sleep(@WAIT_TIME) until instance.status == :running
 
                 #puts "#{@config[:user_name]}  and key #{@config[:key_pair]} on addr #{instance.ip_address}"
                 session = @ssh.start(instance.ip_address,@config[:user_name],:keys => [@config[:key_pair]])
