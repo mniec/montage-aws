@@ -38,7 +38,7 @@ describe Compute do
       it "should fail if cords are not numbers" do
         c = Compute.new :params => ["a","a"]
         lambda { c.execute }.should raise_error
-        c = Compute.new :params => ["2","1","1"]
+        c = Compute.new :params => ["2","1","1","1","1"]
         lambda { c.execute }.should raise_error
         c = Compute.new :params => ["asdf","1"]
         lambda { c.execute }.should raise_error
@@ -48,12 +48,12 @@ describe Compute do
     end
 
     describe "if valid cords are given" do
-      subject { Compute.new :params => ["1", "1"], :options=> {}, :swf=>@swf, :config=>@config }
+      subject { Compute.new :params => ["53.3","33.3","1", "1"], :options=> {}, :swf=>@swf, :config=>@config }
       it "should start workflow" do
         @config.should_receive(:[]).with(:workflow_name)
         @config.should_receive(:[]).with(:workflow_version)
         @config.should_receive(:[]).with(:domain)
-        @workflow_type.should_receive(:start_execution).with({:input => "1 1 2"})
+        @workflow_type.should_receive(:start_execution).with({:input => "53.3 33.3 1 1 2"})
 
         subject.execute
       end
@@ -61,14 +61,14 @@ describe Compute do
       describe "should make use of the '--machines' option" do
 
         it "should check if machines param can be parsed as integer" do
-          c = Compute.new :params => ["1", "1"],
+          c = Compute.new :params => ["53.3","33.3","1", "1"],
           :options => {:machines => "10z"}, :swf=>@swf, :config=> @config
           lambda { c.compute }.should raise_error
           
         end
         it "should pass machines number as a 3rd argument to workflow input" do
-          @workflow_type.should_receive(:start_execution).with(:input => "1 1 10")
-          c = Compute.new :params => ["1", "1"],
+          @workflow_type.should_receive(:start_execution).with(:input => "53.3 33.3 1 1 10")
+          c = Compute.new :params => ["53.3", "33.3", "1", "1"],
           :options => {:machines => "10"}, :swf=>@swf, :config=> @config
           c.execute
         end
