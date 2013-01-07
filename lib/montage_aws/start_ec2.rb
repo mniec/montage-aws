@@ -33,6 +33,7 @@ module MontageAWS
             end
             
             unless instance.nil?
+
                 sleep(@WAIT_TIME) until instance.status == :running
                 
                 max_trials = 3

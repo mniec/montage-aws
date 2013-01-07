@@ -15,8 +15,9 @@ describe Tasks do
     @config = double('config')
     @swf = double('swf')
     @ec2 = double('ec2')
+    @montage_helper = double('helper')
     
-    @args = {:config => @config, :swf => @swf, :ec2 => @ec2}
+    @args = {:config => @config, :swf => @swf, :ec2 => @ec2, :montage_helper => @montage_helper}
   end
   describe ".validate" do
     it "should return true to valid spec" do

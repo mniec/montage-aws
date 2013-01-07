@@ -34,7 +34,7 @@ def create_config
 end
 
 
-def create_tasks_factory config, swf, ec2
+def create_tasks_factory config, swf, ec2, montage_helper
   #init task factory
   spec = {
     # creates swf stuff
@@ -47,7 +47,9 @@ def create_tasks_factory config, swf, ec2
     :start_ec2_provisioner => InfrastructureProvisioner
   }
   Tasks.validate! spec
-  Tasks.new spec, :config => config, :swf=> swf, :ec2=> ec2, :logger => $stderr
+
+  Tasks.new spec, :config => config, :swf=> swf, :ec2=> ec2, :montage_helper => montage_helper, :logger => $stderr
+
 end
 
 @config = create_config
@@ -55,7 +57,8 @@ puts @config.inspect
 setup_aws @config
 @swf = create_swf
 @ec2 = create_ec2
-@tasks = create_tasks_factory @config, @swf, @ec2
+@montage_helper = MontageHelper.new
+@tasks = create_tasks_factory @config, @swf, @ec2, @montage_helper
 
 begin
   cmd = Cmd.new ARGV
