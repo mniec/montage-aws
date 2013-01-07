@@ -11,6 +11,8 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://www.git.npspace.pl/awscomp'
 
   s.add_dependency('aws-sdk', '=1.7.1')
+  s.add_dependency('net-sftp')
+  s.add_dependency('net-ssh')
 
   s.add_development_dependency('rspec')
   s.add_development_dependency('guard')
