@@ -21,18 +21,21 @@ describe StartEc2 do
 	end 
 
 	describe "#execute" do 
-		it 'should create new ec2 instance and invoke command on it ' do 
+		it 'should create instance, import existing key_pair and execute command on it' do 
 
 		end 
 
-		it 'should start ec2 instance and invoke command  on it ' do
+		it 'should  create new key_pair store it on disks, create new instance and execute command on it' do 
+		end 
+
+		it 'should find stopped instance, start it  and invoke command via ssh' do
 			user_name ='ubuntu'
 			ip = '10.0.0.1'
 
-			@config.should_receive('[]').with(:ami_id).and_return('ami-7542c01c')
-			@config.should_receive('[]').with(:key_pair).and_return('identity.pub')
-			@config.should_receive('[]').with(:region){'us-east-1a'}
-			@config.should_receive('[]').with(:user_name){user_name}
+			@config.should_receive(:[]).with(:ami_id).and_return('ami-7542c01c')
+			@config.should_receive(:[]).with(:key_pair_priv).and_return('identity.pem')
+			@config.should_receive(:[]).with(:region){'us-east-1a'}
+			@config.should_receive(:[]).with(:user_name){user_name}
 
 
 			instance = double('instance')
@@ -41,6 +44,7 @@ describe StartEc2 do
 			instance.should_receive('status').and_return(:stopped,:stopped, :pending, :running)
 			instance.should_receive('image_id'){'ami-7542c01c'}
 			instance.should_receive('availability_zone'){'us-east-1a'}
+			instance.should_receive('key_name'){'montage_key'}
 
 			instances = double('instances')
 			
@@ -53,14 +57,10 @@ describe StartEc2 do
 			session.should_receive('exec!').with(command)
 			session.should_receive('close')
 
-			@ssh.should_receive('start').with(ip,user_name,:keys => ['identity.pub']).and_return(session)
+			@ssh.should_receive('start').with(ip,user_name,:keys => ['identity.pem']).and_return(session)
 
 			
 			subject.start_and_execute_cmd command
 		end
-
-		#instances.should_receive('create').with({:image_id => "ami-7542c01c",:availability_zone => 'us-east-1a', :security_groups => 'admin' }).and_return('i-1234')
-			#instances.should_receive(':[]').with('i-1234').and_return(instance)
-
 	end 
 end 

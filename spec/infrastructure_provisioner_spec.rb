@@ -21,8 +21,8 @@ describe InfrastructureProvisioner do
 	describe '#execute' do 
 		it 'should create and execute provision tasks' do 
 
-			@config.should_receive(:domain) {'test1'}
-			@config.should_receive(:provision_task_list) {'provision-tasks'}
+			@config.should_receive(:[]).with(:domain) {'test1'}
+			@config.should_receive(:[]).with(:provision_task_list) {'provision-tasks'}
 
 			task = double('task')
 			task.should_receive('execute')
