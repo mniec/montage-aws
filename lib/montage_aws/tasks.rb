@@ -6,6 +6,7 @@ module MontageAWS
       self.class.validate! tasks
       @available_tasks = tasks
       @params = params
+      @params[:tasks] = self
     end
 
     def self.validate! spec
