@@ -121,7 +121,7 @@ module MontageAWS
                 end
             else
                 @logger.puts 'INFO: Creating new KeyPair'
-                key_pair = ec2.key_pairs.create(KEYPAIR_NAME)
+                key_pair = @ec2.key_pairs.create(KEYPAIR_NAME)
                 File.open(@config[:key_pair_priv], "w") do |f|
                     f.write(key_pair.private_key)
                 end
