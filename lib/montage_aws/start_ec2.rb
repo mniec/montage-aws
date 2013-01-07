@@ -73,7 +73,7 @@ module MontageAWS
 
             ssh_session.sftp.connect do |sftp|
                 sftp.upload!(@config[:montage_gem_file], "/home/#{@config[:user_name]}/montage_aws-0.0.1.gem") 
-                sftp.upload!("/home/pawel/.montage_aws.yml", "/home/#{@config[:user_name]}/.montage_aws.yml")
+                sftp.upload!( File.join(ENV['HOME'], ".montage_aws.yml"), "/home/#{@config[:user_name]}/.montage_aws.yml")
             end 
 
             puts ssh_session.exec! "sudo gem install --no-ri --no-rdoc montage_aws-0.0.1.gem"
