@@ -1,8 +1,10 @@
 module MontageAWS
   class Provision
+
     def initialize params
       @swf = params[:swf]
       @config = params[:config]
+      @s3 = params[:s3]
     end
     
     def execute
@@ -17,6 +19,11 @@ module MontageAWS
 
       create_activity('provision', vsn, @config[:provision_task_list], domain)
       create_activity('project', vsn, @config[:compute_task_list], domain)
+
+      bucket_name = @config[:s3_bucket]
+      b = @s3.buckets[bucket_name]
+      @s3.buckets.create(bucket_name) unless b.exists?
+
     end
     
     private

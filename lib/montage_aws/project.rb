@@ -7,6 +7,8 @@ module MontageAWS
       @activity_task = params[:activity_task]
       @montage_helper = params[:montage_helper]
       @s3 = params[:s3]
+      @logger = params[:logger]
+      @config = params[:config]
     end
     
     def execute
@@ -25,15 +27,20 @@ module MontageAWS
       
       Dir.mkdir rawdir
       Dir.mkdir projdir
-
+      
+      info "fetching images"
       @montage_helper.get rawdir, lines
       @activity_task.record_heartbeat! :details=> "33%"
+      info "making list"
       @montage_helper.make_list rawtbl, rawdir
+      info "making template"
       @montage_helper.make_template templ, x, y, h, w
-      @montage_helper.project rawdir, rawtbl, templ, projdir, stats
+      info "projecting"
+      @montage_helper.project projdir, stats, rawdir, rawtbl, templ
       @activity_task.record_heartbeat! :details=> "66%"
       
       upload_results "#{run_id}/#{@activity_task.activity_id}", Dir.glob("#{projdir}/*")
+
       @activity_task.record_heartbeat! :details=> "100%"
       @activity_task.complete!
     end
@@ -41,10 +48,14 @@ module MontageAWS
     
     def upload_results prefix, files
       return if files.size == 0
-      b = @s3.buckets['montage']
+      b = @s3.buckets[@config[:s3_bucket]]
       files.each do |file|
         b.objects["#{prefix}/#{file}"].write(Pathname.new(file))
       end
+    end
+
+    def info msg
+      @logger.puts msg
     end
   end
 end

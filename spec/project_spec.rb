@@ -7,10 +7,11 @@ describe ProjectAndDownload do
     @s3 = double('s3')
     @config = double('config')
     @montage_helper = double('montage_helper')
+    
   end
 
   describe "#execute" do
-    subject { ProjectAndDownload.new(:activity_task=>@task, :swf => @swf, :s3=> @s3, :config => @config, :montage_helper=>@montage_helper) }
+    subject { ProjectAndDownload.new(:activity_task=>@task, :swf => @swf, :s3=> @s3, :config => @config, :montage_helper=>@montage_helper, :logger=>double(:puts=>true)) }
     it 'should call montage helper to download all the files' do
       run_id = "23sdfasdfasdf2bpi232i3on"
       file1 = "sth.tar.gz"
@@ -20,6 +21,8 @@ describe ProjectAndDownload do
       list = "/tmp/#{run_id}/raw.tbl"
       dir = "/tmp/#{run_id}/raw"
       out_dir = "/tmp/#{run_id}/projected"
+
+      @config.should_receive(:[]).with(:s3_bucket){'bucket'}
 
       @task.should_receive(:record_heartbeat!).with(:details => "0%")
       @task.should_receive(:record_heartbeat!).with(:details => "33%")

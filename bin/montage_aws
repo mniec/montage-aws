@@ -19,6 +19,10 @@ def create_ec2
   AWS::EC2.new
 end
 
+def create_s3
+  AWS::S3.new
+end
+
 def create_config
   default_config = {
     :domain => "montage_aws",
@@ -33,8 +37,7 @@ def create_config
   end
 end
 
-
-def create_tasks_factory config, swf, ec2, montage_helper
+def create_tasks_factory config, swf, ec2, s3, montage_helper
   #init task factory
   spec = {
     # creates swf stuff
@@ -52,7 +55,7 @@ def create_tasks_factory config, swf, ec2, montage_helper
   }
   Tasks.validate! spec
 
-  Tasks.new spec, :config => config, :swf=> swf, :ec2=> ec2, :montage_helper => montage_helper, :logger => $stderr
+  Tasks.new spec, :config => config, :swf => swf, :ec2 => ec2, :s3 => s3,  :montage_helper => montage_helper, :logger => $stderr
 
 end
 
@@ -61,8 +64,9 @@ puts @config.inspect
 setup_aws @config
 @swf = create_swf
 @ec2 = create_ec2
+@s3  = create_s3
 @montage_helper = MontageHelper.new
-@tasks = create_tasks_factory @config, @swf, @ec2, @montage_helper
+@tasks = create_tasks_factory @config, @swf, @ec2, @s3, @montage_helper
 
 begin
   cmd = Cmd.new ARGV

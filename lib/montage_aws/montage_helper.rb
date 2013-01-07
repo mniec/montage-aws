@@ -14,16 +14,37 @@ module MontageAWS
       res = []
       if per_machine > 0
         1.upto machines do
-          res << lines.shift(per_machine).join("")
+          res << lines.shift(per_machine).join("\n")
         end
       end
       if rest > 0
-        res << lines.shift(rest).join("")
+        res << lines.shift(rest).join("\n")
       end
       res
     end
     
+    def get dir, lines
+      lines.each  do |l|
+        url, file = l.split(/\s+/)
+        path = File.join(dir,file.sub('.gz',''))
+        exec "mArchiveGet '#{url}' #{path}"
+      end
+    end
+    
+    def make_list out, dir
+      exec "mImgtbl #{dir} #{out}"
+    end
+    
+    def make_template template, x, y, h, w
+      exec "mHdr '#{x} #{y}' #{h} #{template}"
+    end
+
+    def project projdir, stats, rawdir, rawtbl, template
+      exec "mProjExec -p #{rawdir} #{rawtbl} #{template} #{projdir} #{stats}"
+    end
+    
     def exec cmd
+      puts "trying to exec: #{cmd}"
       system cmd
     end
 
