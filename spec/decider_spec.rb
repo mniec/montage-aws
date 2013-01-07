@@ -82,8 +82,8 @@ describe Decider do
 
       @task.should_receive(:schedule_activity_task).with({:name=> "provision", :version => "conf"}).exactly(10)
       @montage_helper.should_receive(:divide).with(33.3, 33.3, 1.0, 1.0, 10) { ["file1\nfile2", "file3\nfile4"] }
-      @task.should_receive(:schedule_activity_task).with({:name=>"project", :version=>"conf"},{:input=>"file1\nfile2"})
-      @task.should_receive(:schedule_activity_task).with({:name=>"project", :version=>"conf"},{:input=>"file3\nfile4"})
+      @task.should_receive(:schedule_activity_task).with({:name=>"project", :version=>"conf"},{:input=>"33.3 33.3 1.0 1.0\nfile1\nfile2"})
+      @task.should_receive(:schedule_activity_task).with({:name=>"project", :version=>"conf"},{:input=>"33.3 33.3 1.0 1.0\nfile3\nfile4"})
       subject.handle_workflow_start(@event, @task)
     end
   end

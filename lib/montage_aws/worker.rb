@@ -9,12 +9,20 @@ module MontageAWS
     end
     
     def execute
+      task_list = @config[:compute_task_list]
       d = @swf.domains[@config[:domain]]
-      d.activity_tasks.poll('compute-tasks') do |activ|
+
+      info "Starting to fetch tasks from #{task_list}"
+
+      d.activity_tasks.poll(task_list) do |activ|
+        info "Received task #{activ}"
         task = @tasks.from_worker_task activ
         task.execute
       end
     end
     
+    def info msg
+      @logger.puts "INFO: #{msg}"
+    end
   end
 end

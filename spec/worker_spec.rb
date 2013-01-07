@@ -23,6 +23,7 @@ describe Worker do
   describe "#execute" do
     it "should poll for activity tasks" do
       @config.should_receive(:[]).with(:domain) {'test1'}
+      @config.should_receive(:[]).with(:compute_task_list) {'task_list'}
 
       activity_tasks = double('activity_tasks')
       activity_tasks.should_receive(:poll).and_yield(nil)

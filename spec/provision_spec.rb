@@ -29,6 +29,8 @@ describe Provision do
       @config.should_receive(:[]).with(:default_task_list){ 'main' }
       @config.should_receive(:[]).with(:workflow_name){ 'test_wf' }
       @config.should_receive(:[]).with(:workflow_version) { '1' }.at_least(:once)
+      @config.should_receive(:[]).with(:provision_task_list) { "task_list" }
+      @config.should_receive(:[]).with(:compute_task_list) { "task_list" }
       
       workflow_types = double('workflow_types')
       workflow_types.should_receive(:create)

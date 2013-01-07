@@ -1,16 +1,20 @@
+require 'tmpdir'
+
 module MontageAWS
   class ProjectAndDownload
-    def initialize activity_task, params
-      @activity_task = activity_task
+
+    def initialize  params
+      @activity_task = params[:activity_task]
       @montage_helper = params[:montage_helper]
       @s3 = params[:s3]
     end
     
     def execute
       @activity_task.record_heartbeat! :details=> "0%"
-      x,y,h,w = @activity_task.workflow_execution.input.split(" ").map {|x| x.to_f}
+
       run_id = @activity_task.workflow_execution.run_id
       lines = @activity_task.input.split("\n").map {|x| x.strip}
+      x,y,h,w = lines.shift.split(" ").map {|x| x.to_f}
       
       dir     = Dir.mktmpdir
       rawdir  = File.join dir, "raw"

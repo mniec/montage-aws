@@ -41,7 +41,7 @@ module MontageAWS
       end
       file_groups = @montage_helper.divide(x, y, h, w, machines)
       file_groups.each do |f|
-        task.schedule_activity_task({:name => "project", :version => vsn}, :input => f)
+        task.schedule_activity_task({:name => "project", :version => vsn}, :input => "#{x} #{y} #{h} #{w}\n#{f}")
       end
     end
 
