@@ -14,7 +14,6 @@ module MontageAWS
     def execute
       @activity_task.record_heartbeat! :details=> "0%"
 
-      run_id = @activity_task.workflow_execution.run_id
       lines = @activity_task.input.split("\n").map {|x| x.strip}
       x,y,h,w = lines.shift.split(" ").map {|x| x.to_f}
       
@@ -39,7 +38,7 @@ module MontageAWS
       @montage_helper.project projdir, stats, rawdir, rawtbl, templ
       @activity_task.record_heartbeat! :details=> "66%"
       
-      upload_results "#{run_id}/#{@activity_task.activity_id}", Dir.glob("#{projdir}/*")
+      upload_results "#{@activity_task.activity_id}", Dir.glob("#{projdir}/*")
 
       @activity_task.record_heartbeat! :details=> "100%"
       @activity_task.complete!
