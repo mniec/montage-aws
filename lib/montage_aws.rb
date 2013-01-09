@@ -20,14 +20,14 @@ autoload :Worker, 'montage_aws/tasks/cmd/worker'
 autoload :InfrastructureProvisioner, 'montage_aws/tasks/cmd/infrastructure_provisioner'
 autoload :Decider, 'montage_aws/tasks/cmd/decider'
 autoload :Compute, 'montage_aws/tasks/cmd/compute'
+autoload :StartEc2, 'montage_aws/tasks/cmd/start_ec2'
+autoload :StartEC2InfrastructureProvisioner, 'montage_aws/tasks/cmd/start_ec2'
+autoload :StartEC2Worker, 'montage_aws/tasks/cmd/start_ec2'
+autoload :StartEC2Decider, 'montage_aws/tasks/cmd/start_ec2'
 
 # activities
 autoload :Project, 'montage_aws/tasks/activities/project'
 autoload :Merge, 'montage_aws/tasks/activities/merge'
-autoload :StartEc2, 'montage_aws/tasks/activities/start_ec2'
-autoload :StartEC2InfrastructureProvisioner, 'montage_aws/tasks/activities/start_ec2'
-autoload :StartEC2Worker, 'montage_aws/tasks/activities/start_ec2'
-autoload :StartEC2Worker, 'montage_aws/tasks/activities/start_ec2'
-autoload :StartEC2Decider, 'montage_aws/tasks/activities/start_ec2'
+
 
 end

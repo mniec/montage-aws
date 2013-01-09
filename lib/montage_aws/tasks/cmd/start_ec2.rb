@@ -4,11 +4,11 @@ require 'openssl'
 require 'aws-sdk'
 
 module MontageAWS
-  class StartEc2 < ActivityTask
+  class StartEc2 < Task
     KEYPAIR_NAME = 'montage_key'
     SECURITY_GROUP_NAME = 'montage_security_group'
 
-    def initialize(task, params)
+    def initialize(params)
       super
       @ec2_config = params[:config][:ec2]
 
@@ -169,7 +169,7 @@ module MontageAWS
 
   class StartEC2InfrastructureProvisioner < StartEc2
 
-    def initialize task, params
+    def initialize params
       super
     end
 
@@ -178,19 +178,19 @@ module MontageAWS
     end
   end
 
-  class StartEC2Worker <StartEc2
+  class StartEC2Worker < StartEc2
     def initialize task, params
-      super
+      super params
     end
 
     def execute
-      start_and_execute_cmd "montage_aws start -f "
+      start_and_execute_cmd "montage_aws start_worker -f "
     end
   end
 
   class StartEC2Decider <StartEc2
     def initialize task, params
-      super
+      super params
     end
 
     def execute
