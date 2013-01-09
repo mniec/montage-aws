@@ -44,12 +44,9 @@ module MontageAWS
 
                 begin 
                     session = @ssh.start(instance.ip_address,@config[:user_name],:keys => [@config[:key_pair_priv]])
-
                     setup_machine session
-
                     @logger.puts "INFO: Executing #{command}"
-
-                    puts session.exec! command
+                    session.exec! command
                     session.close() 
                 rescue Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTUNREACH => err 
                     max_trials-=1
@@ -148,7 +145,7 @@ module MontageAWS
                     #delete all instances using old key
                     @ec2.instances.each do |i| 
                         if i.key_name == KEYPAIR_NAME
-                            @logger "INFO: Terminating instance: #{i.id} (uses invalid keypair)"
+                            @logger.puts "INFO: Terminating instance: #{i.id} (uses invalid keypair)"
                             i.terminate 
                         end 
                     end
@@ -177,7 +174,7 @@ module MontageAWS
         end 
 
         def execute
-            start_and_execute_cmd "montage_aws start_ec2_provisioner"
+            start_and_execute_cmd "montage_aws start_ec2_provisioner -f "
         end 
     end 
 
@@ -188,7 +185,7 @@ module MontageAWS
         end 
 
         def execute
-            start_and_execute_cmd "montage_aws start"
+            start_and_execute_cmd "montage_aws start -f "
         end
     end 
 
@@ -198,7 +195,7 @@ module MontageAWS
         end 
 
         def execute
-            start_and_execute_cmd "montage_aws start_decider"
+            start_and_execute_cmd "montage_aws start_decider -f "
         end
     end
 end
