@@ -46,7 +46,7 @@ task_fac = CmdFactory.new(activity_fac, spec, params)
 begin
   cmd = Cmd.new ARGV
   task = task_fac.create_from_cmd cmd
-  task.execute
+  task.execute_cmd
 rescue RuntimeError => e
   $stderr.puts "error: #{e.message}"
 end
