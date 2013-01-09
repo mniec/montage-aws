@@ -1,5 +1,6 @@
 require 'net/ssh'
 require 'net/sftp'
+require 'openssl'
 
 module MontageAWS
     class StartEc2
@@ -14,16 +15,17 @@ module MontageAWS
 
             if params[:ssh].nil?
                 @ssh = Net::SSH
-                @sftp = Net::SFTP
                 @WAIT_TIME = 2
             else #for testing 
-                @sftp = params[:sftp]
                 @ssh = params[:ssh]
                 @WAIT_TIME = 0 
             end 
         end 
 
         def start_and_execute_cmd command 
+            setup_security_group
+            setup_keys
+
             instance = find_stopped
             
             if instance.nil? 
@@ -36,7 +38,7 @@ module MontageAWS
 
                 sleep(@WAIT_TIME) until instance.status == :running
                 
-                max_trials = 3
+                max_trials = 2
 
                 @logger.puts "INFO: Instance is running, trying to connect to #{instance.ip_address}"
 
@@ -49,8 +51,7 @@ module MontageAWS
 
                     puts session.exec! command
                     session.close() 
-                rescue Exception => err  
-
+                rescue Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTUNREACH => err 
                     max_trials-=1
                     if max_trials > 0 
                         @logger.puts "ERROR: #{err} retrying after 10s"
@@ -59,6 +60,8 @@ module MontageAWS
                     else 
                         @logger.puts "ERROR: #{err}"
                     end 
+                rescue Net::SSH::AuthenticationFailed
+                    @logger.puts("ERROR: AuthenticationFailed")
                 end 
             else
                 @logger.puts 'ERROR: Cannot create instance'
@@ -78,55 +81,81 @@ module MontageAWS
             end 
 
             puts ssh_session.exec! "sudo gem install --no-ri --no-rdoc montage_aws-0.0.1.gem"
-       end 
-
-       def instance_valid? instance
-        instance.image_id == @config[:ami_id] and instance.availability_zone == @config[:region]  and instance.key_name == KEYPAIR_NAME
-    end 
-
-    def find_stopped
-        @ec2.instances.each do |i|
-            if i.status == :stopped and instance_valid?(i)
-                @logger.puts "INFO: #{i.id} found"
-                return i
-            end 
         end 
 
-        @logger.puts 'INFO: No valid montage instance found. Trying to create new one.'
-    end 
+        def instance_valid? instance
+            instance.image_id == @config[:ami_id] and instance.availability_zone == @config[:region]  and instance.key_name == KEYPAIR_NAME
+        end 
 
-    def create_new
+        def find_stopped
+            @ec2.instances.each do |i|
+                if i.status == :stopped and instance_valid?(i)
+                    @logger.puts "INFO: #{i.id} found"
+                    return i
+                end 
+            end 
 
-        setup_security_group
-        setup_keys
+            @logger.puts 'INFO: No valid montage instance found. Trying to create new one.'
+        end 
 
-        @logger.puts 'INFO: Creating new microinstance from montage ami'
+        def create_new
+            @logger.puts 'INFO: Creating new microinstance from montage ami'
 
-            #and finally create and start instance     
+                #and finally create and start instance     
             @ec2.instances.create(:image_id => @config[:ami_id], 
                :key_name => KEYPAIR_NAME,
                :availability_zone => @config[:region],
                :instance_type => @config[:instance_type],
-               :security_groups => [SECURITY_GROUP_NAME] )
+                   :security_groups => [SECURITY_GROUP_NAME] )
         end     
 
         def key_files_exists?
-            File.exist? @config[:key_pair_pub] and File.exist? @config[:key_pair_priv]
+           File.exist? @config[:key_pair_priv]
         end 
 
         def setup_keys
             if key_files_exists?
                 unless @ec2.key_pairs.map(&:name).include?(KEYPAIR_NAME)
                     @logger.puts 'INFO: Imporing existing KeyPair'
-                    @ec2.key_pairs.import(KEYPAIR_NAME,File.read(@config[:key_pair_pub]) )
+                    
+                    if File.exist? @config[:key_pair_pub]
+                        @ec2.key_pairs.import(KEYPAIR_NAME,File.read(@config[:key_pair_pub]) )
+                    else
+                        @logger.puts "ERROR: Cannot import keypair public kay doesnt exist" 
+                    end 
                 end
             else
-                @logger.puts 'INFO: Creating new KeyPair'
-                key_pair = @ec2.key_pairs.create(KEYPAIR_NAME)
-                File.open(@config[:key_pair_priv], "w") do |f|
-                    f.write(key_pair.private_key)
-                end
-                # TODO generate public key
+                begin 
+                    @logger.puts 'INFO: Creating new KeyPair'
+                    key_pair = @ec2.key_pairs.create(KEYPAIR_NAME)
+                    File.open(@config[:key_pair_priv], "w") do |f|
+                        f.write(key_pair.private_key)
+                    end
+
+
+                    private_key = OpenSSL::PKey::RSA.new(key_pair.private_key)
+                    File.open(@config[:key_pair_pub], "w") do |f|
+                        f.write private_key.public_key.to_pem
+                    end 
+                    
+
+
+                rescue AWS::EC2::Errors::InvalidKeyPair::Duplicate
+                    kp = @ec2.key_pairs.find do |kp|
+                        kp.name == KEYPAIR_NAME
+                    end 
+                    @logger.puts 'INFO: KeyPair already exist deleting'
+                    #delete all instances using old key
+                    @ec2.instances.each do |i| 
+                        if i.key_name == KEYPAIR_NAME
+                            @logger "INFO: Terminating instance: #{i.id} (uses invalid keypair)"
+                            i.terminate 
+                        end 
+                    end
+                    kp.delete
+                    retry
+                end 
+                
             end
         end
 
