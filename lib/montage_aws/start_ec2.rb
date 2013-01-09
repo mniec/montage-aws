@@ -76,36 +76,36 @@ module MontageAWS
             end 
 
             puts ssh_session.exec! "sudo gem install --no-ri --no-rdoc montage_aws-0.0.1.gem"
-       end 
-
-       def instance_valid? instance
-        instance.image_id == @config[:ami_id] and instance.availability_zone == @config[:region]  and instance.key_name == KEYPAIR_NAME
-    end 
-
-    def find_stopped
-        @ec2.instances.each do |i|
-            if i.status == :stopped and instance_valid?(i)
-                @logger.puts "INFO: #{i.id} found"
-                return i
-            end 
         end 
 
-        @logger.puts 'INFO: No valid montage instance found. Trying to create new one.'
-    end 
+        def instance_valid? instance
+            instance.image_id == @config[:ami_id] and instance.availability_zone == @config[:region]  and instance.key_name == KEYPAIR_NAME
+        end 
 
-    def create_new
+        def find_stopped
+            @ec2.instances.each do |i|
+                if i.status == :stopped and instance_valid?(i)
+                    @logger.puts "INFO: #{i.id} found"
+                    return i
+                end 
+            end 
 
-        setup_security_group
-        setup_keys
+            @logger.puts 'INFO: No valid montage instance found. Trying to create new one.'
+        end 
 
-        @logger.puts 'INFO: Creating new microinstance from montage ami'
+        def create_new
 
-            #and finally create and start instance     
+            setup_security_group
+            setup_keys
+
+            @logger.puts 'INFO: Creating new microinstance from montage ami'
+
+                #and finally create and start instance     
             @ec2.instances.create(:image_id => @config[:ami_id], 
                :key_name => KEYPAIR_NAME,
                :availability_zone => @config[:region],
                :instance_type => @config[:instance_type],
-               :security_groups => [SECURITY_GROUP_NAME] )
+                   :security_groups => [SECURITY_GROUP_NAME] )
         end     
 
         def key_files_exists?
