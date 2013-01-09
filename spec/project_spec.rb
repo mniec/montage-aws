@@ -11,7 +11,7 @@ describe Project do
   end
 
   describe "#execute" do
-    subject { Project.new(:activity_task=>@task, :swf => @swf, :s3=> @s3, :config => @config, :montage=>@montage, :logger=>double(:puts=>true)) }
+    subject { Project.new(@task, :swf => @swf, :s3=> @s3, :config => @config, :montage=>@montage, :logger=>double(:puts=>true)) }
     it 'should call montage helper to download all the files' do
       run_id = "23sdfasdfasdf2bpi232i3on"
       file1 = "sth.tar.gz"

@@ -1,6 +1,15 @@
 require "spec_helper"
 
 describe CmdTask do
+  before(:each) do
+    @config  = double('config')
+    @logger  = double('logger', :puts => true)
+    @tasks   = double('tasks')
+    @swf     = double('swf')
+    @s3      = double('s3')
+    @mh      = double('montage')
+  end
+
   subject do
     CmdTask.new     :params         => %w{a b},
                     :options        => {:p => true},
@@ -10,14 +19,6 @@ describe CmdTask do
                     :s3             => @s3,
                     :montage => @mh
 
-  end
-  before(:each) do
-    @config  = double('config')
-    @logger  = double('logger', :puts => true)
-    @tasks   = double('tasks')
-    @swf     = double('swf')
-    @s3      = double('s3')
-    @mh      = double('montage')
   end
 
   it "it should initialize variables properly" do
@@ -41,6 +42,5 @@ describe CmdTask do
       @logger.should_receive(:puts)
       subject.info "ala"
     end
-
   end
 end

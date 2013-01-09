@@ -1,16 +1,8 @@
 require 'tmpdir'
 
 module MontageAWS
-  class Project
+  class Project < ActivityTask
 
-    def initialize  params
-      @activity_task = params[:activity_task]
-      @montage = params[:montage]
-      @s3 = params[:s3]
-      @logger = params[:logger]
-      @config = params[:config]
-    end
-    
     def execute
       @activity_task.record_heartbeat! :details=> "0%"
 

@@ -10,10 +10,10 @@ describe StartEc2 do
 		@config = double('config')
 		@cf = double('cf')
 		@cf.stub(:[]).with(:ec2){@config}
+    @task = double('activity_task')
 	end
 
-	subject { StartEc2.new  :params => @params, :options => @options, 
-		:logger => $stderr, :config=>@cf, :ec2 => @ec2, :ssh => @ssh  }
+	subject { StartEc2.new @task,	:logger => $stderr, :config=>@cf, :ec2 => @ec2, :ssh => @ssh  }
 
 	describe ".new" do 
 		it "should accept params, options, config, logger" do
