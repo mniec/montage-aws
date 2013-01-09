@@ -42,6 +42,14 @@ module MontageAWS
     def project projdir, stats, rawdir, rawtbl, template
       exec "mProjExec -p #{rawdir} #{rawtbl} #{template} #{projdir} #{stats}"
     end
+
+    def add res, projdir, projtbl, template
+      exec "mAdd -p #{projdir} #{projtbl} #{template} #{res}"
+    end
+
+    def grayJPEG finalfits, finaljpeg
+      exec "mJPEG -gray #{finalfits} 20% 99.98% loglog -out #{finaljpeg}"
+    end
     
     def exec cmd
       puts "trying to exec: #{cmd}"

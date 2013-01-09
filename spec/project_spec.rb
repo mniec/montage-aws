@@ -7,7 +7,7 @@ describe ProjectAndDownload do
     @s3 = double('s3')
     @config = double('config')
     @montage_helper = double('montage_helper')
-    
+
   end
 
   describe "#execute" do
@@ -31,12 +31,12 @@ describe ProjectAndDownload do
       @task.should_receive(:activity_id){"kpwoeeirubtreibg"}
       @task.should_receive(:workflow_execution){ double(:run_id => run_id, :input => "1.0 2.0 3.0 4.0 10") }.any_number_of_times
       @task.should_receive(:input) { "1.0 2.0 3.0 4.0\n#{line1}\n#{line2}\n" }
-      @task.should_receive(:complete!)
+      @task.should_receive(:complete!).with(:result=>nil)
 
       @montage_helper.should_receive(:get).with(instance_of(String), [line1, line2])
       @montage_helper.should_receive(:make_list).with(kind_of(String), kind_of(String))
       @montage_helper.should_receive(:make_template).with(kind_of(String), 1.0, 2.0, 3.0, 4.0)
-      @montage_helper.should_receive(:project).with(kind_of(String),kind_of(String), kind_of(String), kind_of(String), kind_of(String)) 
+      @montage_helper.should_receive(:project).with(kind_of(String),kind_of(String), kind_of(String), kind_of(String), kind_of(String))
 
       bucket = double('bucket')
       buckets = double('buckets')

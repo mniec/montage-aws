@@ -11,7 +11,7 @@ describe Decider do
   end
 
   subject { Decider.new :params=> [], :options => {},
-    :config => @config, :logger => @logger, :swf => @swf, 
+    :config => @config, :logger => @logger, :swf => @swf,
     :tasks=>@tasks, :montage_helper=> @montage_helper}
 
   describe ".new" do
@@ -87,14 +87,13 @@ describe Decider do
       subject.handle_workflow_start(@event, @task)
     end
   end
-  
-  describe "#check" do
-    
-  end
 
-  describe "#check_if_schedule_add" do
-    it "should return true if all add task have been done" do
-      
+
+
+  describe "#handle_activity_completed" do
+    it "should check if all the project task are finised" do
+      #@task.should_receive :events
+      #subject.handle_activity_completed @event, @task
     end
   end
 
