@@ -1,5 +1,6 @@
 module MontageAWS
   class CmdTask
+    attr_reader :params, :options, :config, :logger, :task_factory, :swf, :s3, :montage
 
     def initialize args
       @params = args[:params]
@@ -10,13 +11,12 @@ module MontageAWS
 
       @task_factory = args[:tasks]
       @swf = args[:swf]
-      @config = args[:config]
       @s3 = args[:s3]
-      @montage_helper = args[:montage_helper]
+      @montage = args[:montage]
     end
 
     def info msg
-      @logger.puts "INFO: #{msg}"
+      logger.puts "INFO: #{msg}"
     end
 
   end
