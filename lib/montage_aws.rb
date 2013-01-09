@@ -20,7 +20,7 @@ autoload :ActivityTask, 'montage_aws/tasks/activities/activity_task'
 # cmd
 autoload :Provision, 'montage_aws/tasks/cmd/provision'
 autoload :Worker, 'montage_aws/tasks/cmd/worker'
-autoload :EC2Provider, 'montage_aws/tasks/cmd/ec2_provder'
+autoload :EC2Provider, 'montage_aws/tasks/cmd/ec2_provider'
 autoload :Decider, 'montage_aws/tasks/cmd/decider'
 autoload :Compute, 'montage_aws/tasks/cmd/compute'
 autoload :StartEC2Worker, 'montage_aws/tasks/activities/start_ec2_worker'
