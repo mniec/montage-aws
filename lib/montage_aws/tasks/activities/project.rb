@@ -1,7 +1,7 @@
 require 'tmpdir'
 
 module MontageAWS
-  class ProjectAndDownload
+  class Project
 
     def initialize  params
       @activity_task = params[:activity_task]

@@ -6,15 +6,15 @@ module MontageAWS
       @config = params[:config]
       @s3 = params[:s3]
     end
-    
+
     def execute
       vsn = @config[:workflow_version]
 
       domain = @swf.domains.create(@config[:domain], 10)
-      
-      workflow = create_workflow(@config[:workflow_name], 
-                                 vsn, 
-                                 @config[:default_task_list], 
+
+      workflow = create_workflow(@config[:workflow_name],
+                                 vsn,
+                                 @config[:default_task_list],
                                  domain)
 
       compute_task_list = @config[:compute_task_list]
@@ -27,9 +27,9 @@ module MontageAWS
       @s3.buckets.create(bucket_name) unless b.exists?
 
     end
-    
+
     private
-    
+
     def create_activity name, vsn, task_list, domain
       domain.activity_types.create(name,
                                    vsn,
@@ -41,14 +41,14 @@ module MontageAWS
     end
 
     def create_workflow name, vsn, task_list, domain
-      workflow_opts = { :default_task_list => task_list,
-        :default_child_policy => :request_cancel,
-        :default_task_start_to_close_timeout => 3600,
-        :default_execution_start_to_close_timeout => 24 * 3600 }
+      workflow_opts = {:default_task_list => task_list,
+                       :default_child_policy => :request_cancel,
+                       :default_task_start_to_close_timeout => 3600,
+                       :default_execution_start_to_close_timeout => 24 * 3600}
 
       domain.workflow_types.create(name,
-                                   vsn, 
-                                   workflow_opts)      
+                                   vsn,
+                                   workflow_opts)
     end
   end
 end

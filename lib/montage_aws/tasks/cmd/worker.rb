@@ -7,7 +7,7 @@ module MontageAWS
       @tasks = params[:tasks]
       @logger = params[:logger].nil? ? $stderr : params[:logger]
     end
-    
+
     def execute
       task_list = @config[:compute_task_list]
       d = @swf.domains[@config[:domain]]
@@ -20,7 +20,7 @@ module MontageAWS
         task.execute
       end
     end
-    
+
     def info msg
       @logger.puts "INFO: #{msg}"
     end
