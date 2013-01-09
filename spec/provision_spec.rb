@@ -38,7 +38,7 @@ describe Provision do
       workflow_types.should_receive(:create)
 
       activity_types = double('activity_types')
-      activity_types.should_receive(:create).exactly(2)
+      activity_types.should_receive(:create).exactly(3)
 
       domain = double('domain')
       domain.should_receive(:workflow_types){ workflow_types }

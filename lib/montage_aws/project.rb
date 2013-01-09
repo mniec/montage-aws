@@ -38,18 +38,22 @@ module MontageAWS
       @montage_helper.project projdir, stats, rawdir, rawtbl, templ
       @activity_task.record_heartbeat! :details=> "66%"
       
-      upload_results "#{@activity_task.activity_id}", Dir.glob("#{projdir}/*")
+      files = Dir.glob("#{projdir}/*")
+      ids = upload_results("#{@activity_task.activity_id}", files)
 
       @activity_task.record_heartbeat! :details=> "100%"
-      @activity_task.complete!
+      @activity_task.complete! :result => ids.join("\n")
     end
     
     
     def upload_results prefix, files
+      bucket_name = @config[:s3_bucket]
       return if files.size == 0
-      b = @s3.buckets[@config[:s3_bucket]]
-      files.each do |file|
-        b.objects["#{prefix}/#{file}"].write(Pathname.new(file))
+      b = @s3.buckets[bucket_name]
+      files.map do |file|
+        id = "#{prefix}/#{File.basename(file)}"
+        b.objects[id].write(Pathname.new(file))
+        id
       end
     end
 

@@ -1,10 +1,18 @@
-require "rspec"
+require 'spec_helper'
 
-describe "My behaviour" do
+describe Merge do
+  before(:each) do
+    @task = double('activity_task')
+    @swf = double('swf')
+    @s3 = double('s3')
+    @config = double('config')
+    @montage_helper = double('montage_helper')
 
-  it "should do something" do
-
-    #To change this template use File | Settings | File Templates.
-    true.should == false
   end
+
+  describe "#execute" do
+
+
+  end
+
 end
