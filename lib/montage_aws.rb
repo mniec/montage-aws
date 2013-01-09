@@ -9,6 +9,8 @@ autoload :MontageHelper, 'montage_aws/utils/montage_helper'
 # factories
 autoload :Tasks, 'montage_aws/factory/tasks'
 
+autoload :CmdTask, 'montage_aws/tasks/cmd/cmd_task'
+
 # cmd
 autoload :Provision, 'montage_aws/tasks/cmd/provision'
 autoload :Worker, 'montage_aws/tasks/cmd/worker'

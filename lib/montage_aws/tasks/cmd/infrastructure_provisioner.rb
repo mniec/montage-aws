@@ -1,10 +1,5 @@
 module MontageAWS
-  class InfrastructureProvisioner
-    def initialize params
-      @swf = params[:swf]
-      @config = params[:config]
-      @task_factory = params[:tasks]
-    end
+  class InfrastructureProvisioner < CmdTask
 
     def execute
       domain = @swf.domains[@config[:domain]]

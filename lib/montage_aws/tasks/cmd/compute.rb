@@ -1,13 +1,6 @@
 module MontageAWS
-  class Compute
+  class Compute < CmdTask
     DEF_MACHINES=2
-
-    def initialize args
-      @params = args[:params]
-      @options = args[:options]
-      @swf = args[:swf]
-      @config = args[:config]
-    end
 
     def execute
       validate

@@ -1,11 +1,5 @@
 module MontageAWS
-  class Provision
-
-    def initialize params
-      @swf = params[:swf]
-      @config = params[:config]
-      @s3 = params[:s3]
-    end
+  class Provision < CmdTask
 
     def execute
       vsn = @config[:workflow_version]
