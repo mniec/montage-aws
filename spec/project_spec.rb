@@ -1,17 +1,17 @@
 require 'spec_helper'
 
-describe ProjectAndDownload do
+describe Project do
   before(:each) do
     @task = double('activity_task')
     @swf = double('swf')
     @s3 = double('s3')
     @config = double('config')
-    @montage_helper = double('montage_helper')
+    @montage = double('montage')
 
   end
 
   describe "#execute" do
-    subject { ProjectAndDownload.new(:activity_task=>@task, :swf => @swf, :s3=> @s3, :config => @config, :montage_helper=>@montage_helper, :logger=>double(:puts=>true)) }
+    subject { Project.new(@task, :swf => @swf, :s3=> @s3, :config => @config, :montage=>@montage, :logger=>double(:puts=>true)) }
     it 'should call montage helper to download all the files' do
       run_id = "23sdfasdfasdf2bpi232i3on"
       file1 = "sth.tar.gz"
@@ -33,10 +33,10 @@ describe ProjectAndDownload do
       @task.should_receive(:input) { "1.0 2.0 3.0 4.0\n#{line1}\n#{line2}\n" }
       @task.should_receive(:complete!).with(:result=>nil)
 
-      @montage_helper.should_receive(:get).with(instance_of(String), [line1, line2])
-      @montage_helper.should_receive(:make_list).with(kind_of(String), kind_of(String))
-      @montage_helper.should_receive(:make_template).with(kind_of(String), 1.0, 2.0, 3.0, 4.0)
-      @montage_helper.should_receive(:project).with(kind_of(String),kind_of(String), kind_of(String), kind_of(String), kind_of(String))
+      @montage.should_receive(:get).with(instance_of(String), [line1, line2])
+      @montage.should_receive(:make_list).with(kind_of(String), kind_of(String))
+      @montage.should_receive(:make_template).with(kind_of(String), 1.0, 2.0, 3.0, 4.0)
+      @montage.should_receive(:project).with(kind_of(String),kind_of(String), kind_of(String), kind_of(String), kind_of(String))
 
       bucket = double('bucket')
       buckets = double('buckets')

@@ -1,16 +1,8 @@
 require 'tmpdir'
 
 module MontageAWS
-  class ProjectAndDownload
+  class Project < ActivityTask
 
-    def initialize  params
-      @activity_task = params[:activity_task]
-      @montage_helper = params[:montage_helper]
-      @s3 = params[:s3]
-      @logger = params[:logger]
-      @config = params[:config]
-    end
-    
     def execute
       @activity_task.record_heartbeat! :details=> "0%"
 
@@ -28,14 +20,14 @@ module MontageAWS
       Dir.mkdir projdir
       
       info "fetching images"
-      @montage_helper.get rawdir, lines
+      @montage.get rawdir, lines
       @activity_task.record_heartbeat! :details=> "33%"
       info "making list"
-      @montage_helper.make_list rawtbl, rawdir
+      @montage.make_list rawtbl, rawdir
       info "making template"
-      @montage_helper.make_template templ, x, y, h, w
+      @montage.make_template templ, x, y, h, w
       info "projecting"
-      @montage_helper.project projdir, stats, rawdir, rawtbl, templ
+      @montage.project projdir, stats, rawdir, rawtbl, templ
       @activity_task.record_heartbeat! :details=> "66%"
       
       files = Dir.glob("#{projdir}/*")

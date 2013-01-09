@@ -6,7 +6,7 @@ describe Merge do
     @swf = double('swf')
     @s3 = double('s3')
     @config = double('config')
-    @montage_helper = double('montage_helper')
+    @montage = double('montage')
 
   end
 

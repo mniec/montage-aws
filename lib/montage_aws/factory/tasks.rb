@@ -43,7 +43,7 @@ module MontageAWS
       klass = @available_tasks[activity_task.activity_type.name.to_sym]
       raise "No such task available" if klass.nil?
       
-      klass.new({:activity_task => activity_task}.merge(@params))
+      klass.new(activity_task,@params)
     end
     
     private

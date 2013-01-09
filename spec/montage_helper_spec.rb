@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe MontageHelper do
+describe Montage do
   before(:each) do
   end
 
   subject do
-    MontageHelper.new
+    Montage.new
   end
 
   describe "#divide" do
