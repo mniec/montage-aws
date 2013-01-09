@@ -7,12 +7,12 @@ describe Decider do
     @config.stub(:[]) { "conf" }
     @tasks = double('tasks')
     @logger = double(:puts=>true)
-    @montage_helper = double(:divide=>[])
+    @montage = double(:divide=>[])
   end
 
   subject { Decider.new :params=> [], :options => {},
     :config => @config, :logger => @logger, :swf => @swf,
-    :tasks=>@tasks, :montage_helper=> @montage_helper}
+    :tasks=>@tasks, :montage=> @montage}
 
   describe ".new" do
     it "should accept params, options, config, logger" do
@@ -81,7 +81,7 @@ describe Decider do
       @event.stub(:attributes) { attrs }
 
       @task.should_receive(:schedule_activity_task).with({:name=> "provision", :version => "conf"}).exactly(10)
-      @montage_helper.should_receive(:divide).with(33.3, 33.3, 1.0, 1.0, 10) { ["file1\nfile2", "file3\nfile4"] }
+      @montage.should_receive(:divide).with(33.3, 33.3, 1.0, 1.0, 10) { ["file1\nfile2", "file3\nfile4"] }
       @task.should_receive(:schedule_activity_task).with({:name=>"project", :version=>"conf"},{:input=>"33.3 33.3 1.0 1.0\nfile1\nfile2"})
       @task.should_receive(:schedule_activity_task).with({:name=>"project", :version=>"conf"},{:input=>"33.3 33.3 1.0 1.0\nfile3\nfile4"})
       subject.handle_workflow_start(@event, @task)

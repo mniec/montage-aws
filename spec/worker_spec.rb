@@ -7,12 +7,12 @@ describe Worker do
     @config.stub(:[]) { "conf" }
     @tasks = double('tasks')
     @logger = double(:puts=>true)
-    @montage_helper = double(:divide=>[])
+    @montage = double(:divide=>[])
   end
 
   subject { Worker.new :params=> [], :options => {},
     :config => @config, :logger => @logger, :swf => @swf, 
-    :tasks=>@tasks, :montage_helper=> @montage_helper}
+    :tasks=>@tasks, :montage=> @montage}
 
   describe ".new" do
     it "should accept params, options, config, logger" do

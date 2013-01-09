@@ -5,10 +5,10 @@ module MontageAWS
     def execute
       validate
 
-      @machines = @options[:machines].nil? ? DEF_MACHINES : @options[:machines]
+      @machines = options[:machines].nil? ? DEF_MACHINES : options[:machines]
 
-      d = @swf.domains[@config[:domain]]
-      wf = d.workflow_types[@config[:workflow_name], @config[:workflow_version]]
+      d = @swf.domains[config[:domain]]
+      wf = d.workflow_types[config[:workflow_name], config[:workflow_version]]
       wf.start_execution :input => "#{@params[0]} #{@params[1]} #{@params[2]} #{@params[3]} #{@machines}"
     end
 
