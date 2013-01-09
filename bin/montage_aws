@@ -49,7 +49,7 @@ def create_tasks_factory config, swf, ec2, s3, montage_helper
     # start infrastructure provisioner - invoked on instance created in setup_ec2_provisioner phase
     :start_ec2_provisioner => InfrastructureProvisioner,
     :start_worker => Worker,
-    :project => ProjectAndDownload,
+    :project => Project,
     :merge => Merge
   }
   Tasks.validate! spec
