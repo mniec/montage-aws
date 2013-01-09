@@ -7,69 +7,46 @@ CONFIG_FILE="#{ENV['HOME']}/.montage_aws.yml"
 
 include MontageAWS
 
-def setup_aws config
-  AWS.config(config[:aws])
-end
-
-def create_swf
-  AWS::SimpleWorkflow.new
-end
-
-def create_ec2
-  AWS::EC2.new
-end
-
-def create_s3
-  AWS::S3.new
-end
-
-def create_config
-  default_config = {
+default_config = {
     :domain => "montage_aws",
     :workflow_name => "mock_computation",
     :workflow_version => "0.0.1",
     :default_task_list => "computation-task-list",
-  }
-  if File.exists? CONFIG_FILE
-    @ec2_config = YAML.load File.open(CONFIG_FILE)
-  else
-    @ec2_config = default_config
-  end
-end
+}
 
-def create_tasks_factory config, swf, ec2, s3, montage_helper
-  #init task factory
-  spec = {
-    # creates swf stuff
-    :setup => Provision,
-    :start => Compute,
-    :start_daemon => Decider,
-    # start infrastructure provisioner - invoked on instance created in setup_ec2_provisioner phase
-    :start_ec2_provisioner => InfrastructureProvisioner,
-    :start_worker => Worker,
+config = File.exists?(CONFIG_FILE) ? YAML.load(File.open(CONFIG_FILE)) : default_config
+AWS.config(config[:aws])
+
+activities = {
     :provision => StartEC2Worker,
     :project => Project,
     :merge => Merge
-  }
-  Tasks.validate! spec
+}
 
-  Tasks.new spec, :config => config, :swf => swf, :ec2 => ec2, :s3 => s3,  :montage => montage_helper, :logger => $stderr
+spec = {
+    :setup => Provision,
+    :compute => Compute,
+    :start_daemon => Decider,
+    :start_provider => EC2Provider,
+    :start_worker => Worker,
+}
 
-end
+params = {
+    :config => config,
+    :swf => AWS::SimpleWorkflow.new,
+    :ec2 => AWS::EC2.new,
+    :s3 => AWS::S3.new,
+    :montage => Montage.new,
+    :logger => $stderr
+}
 
-@ec2_config = create_config
-puts @ec2_config.inspect
-setup_aws @ec2_config
-@swf = create_swf
-@ec2 = create_ec2
-@s3  = create_s3
-@montage = Montage.new
-@tasks = create_tasks_factory @ec2_config, @swf, @ec2, @s3, @montage
+activity_fac = ActivityFactory.new activities, params
+task_fac = CmdFactory.new(activity_fac, spec, params)
 
 begin
   cmd = Cmd.new ARGV
-  @task = @tasks.create_from_cmd cmd
-  @task.execute
+  task = task_fac.create_from_cmd cmd
+  task.execute
 rescue RuntimeError => e
   $stderr.puts "error: #{e.message}"
 end

@@ -1,5 +1,5 @@
 module MontageAWS
-  class InfrastructureProvisioner < CmdTask
+  class EC2Provider < CmdTask
 
     def execute
       domain = swf.domains[config[:domain]]

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe InfrastructureProvisioner do
+describe EC2Provider do
 	before(:each) do     
 		@swf = double('swf')
 		@config = double('config')
@@ -8,8 +8,8 @@ describe InfrastructureProvisioner do
 	end
 
 
-	subject { InfrastructureProvisioner.new  :params => @params, :options => @options, 
-		:logger => $stderr, :config=>@config, :swf => @swf, :tasks => @tasks_factory }
+	subject { EC2Provider.new  :params => @params, :options => @options,
+		:logger => $stderr, :config=>@config, :swf => @swf, :task_factory => @tasks_factory }
 
 	describe ".new" do
 		it "should accept params, options, config, logger" do 
@@ -26,7 +26,7 @@ describe InfrastructureProvisioner do
 
 			task = double('task')
 			task.should_receive('execute')
-			@tasks_factory.should_receive('from_provision_event'){task}
+			@tasks_factory.should_receive('from_worker_task'){task}
 
 			at = double('activity_tasks') 
 			domain = double('domain')

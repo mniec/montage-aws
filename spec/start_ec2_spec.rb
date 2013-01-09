@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe StartEc2 do
+describe StartEC2Worker do
 
 	before (:each) do 
 		@ec2 = double('ec2')
