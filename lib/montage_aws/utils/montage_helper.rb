@@ -1,5 +1,5 @@
 module MontageAWS
-  class MontageHelper
+  class Montage
     def divide x, y, height, width,  machines
       loc = "/tmp/montage_tmp"
       exec %{mArchiveList DSS DSS2B "#{x} #{y}" #{width} #{height} #{loc}}

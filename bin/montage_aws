@@ -31,9 +31,9 @@ def create_config
     :default_task_list => "computation-task-list",
   }
   if File.exists? CONFIG_FILE
-    @config = YAML.load File.open(CONFIG_FILE)
+    @ec2_config = YAML.load File.open(CONFIG_FILE)
   else
-    @config = default_config
+    @ec2_config = default_config
   end
 end
 
@@ -58,14 +58,14 @@ def create_tasks_factory config, swf, ec2, s3, montage_helper
 
 end
 
-@config = create_config
-puts @config.inspect
-setup_aws @config
+@ec2_config = create_config
+puts @ec2_config.inspect
+setup_aws @ec2_config
 @swf = create_swf
 @ec2 = create_ec2
 @s3  = create_s3
-@montage = MontageHelper.new
-@tasks = create_tasks_factory @config, @swf, @ec2, @s3, @montage
+@montage = Montage.new
+@tasks = create_tasks_factory @ec2_config, @swf, @ec2, @s3, @montage
 
 begin
   cmd = Cmd.new ARGV

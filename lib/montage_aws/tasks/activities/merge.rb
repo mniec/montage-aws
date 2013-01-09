@@ -1,14 +1,7 @@
 require 'tmpdir'
 
 module MontageAWS
-  class Merge
-    def initialize params
-      @activity_task = params[:activity_task]
-      @montage = params[:montage]
-      @s3 = params[:s3]
-      @logger = params[:logger]
-      @config = params[:config]
-    end
+  class Merge < ActivityTask
 
     def execute
       lines = @activity_task.input.split("\n").map { |x| x.strip }

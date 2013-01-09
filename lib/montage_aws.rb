@@ -4,12 +4,15 @@ module MontageAWS
 
 
 autoload :Cmd, 'montage_aws/utils/cmd'
-autoload :MontageHelper, 'montage_aws/utils/montage_helper'
+autoload :Montage, 'montage_aws/utils/montage_helper'
 
 # factories
 autoload :Tasks, 'montage_aws/factory/tasks'
 
+
+autoload :Task, 'montage_aws/tasks/task'
 autoload :CmdTask, 'montage_aws/tasks/cmd/cmd_task'
+autoload :ActivityTask, 'montage_aws/tasks/activities/activity_task'
 
 # cmd
 autoload :Provision, 'montage_aws/tasks/cmd/provision'
