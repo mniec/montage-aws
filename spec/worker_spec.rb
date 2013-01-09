@@ -12,7 +12,7 @@ describe Worker do
 
   subject { Worker.new :params=> [], :options => {},
     :config => @config, :logger => @logger, :swf => @swf, 
-    :tasks=>@tasks, :montage=> @montage}
+    :task_factory=>@tasks, :montage=> @montage}
 
   describe ".new" do
     it "should accept params, options, config, logger" do

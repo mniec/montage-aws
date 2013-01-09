@@ -15,7 +15,7 @@ describe CmdTask do
                     :options        => {:p => true},
                     :config         => @config,
                     :logger         => @logger,
-                    :tasks          => @tasks,
+                    :task_factory   => @tasks,
                     :s3             => @s3,
                     :montage => @mh
 
