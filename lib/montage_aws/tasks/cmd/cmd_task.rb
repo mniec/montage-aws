@@ -10,6 +10,14 @@ module MontageAWS
       @task_factory = args[:task_factory]
     end
 
+    def execute_cmd
+      if options[:f]
+        Process.fork { execute }
+      else
+        execute
+      end
+    end
+
     def info msg
       logger.puts "INFO: #{msg}"
     end
