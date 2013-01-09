@@ -4,12 +4,11 @@ require 'openssl'
 require 'aws-sdk'
 
 module MontageAWS
-  class StartEc2 < Task
+  module EC2Utils
     KEYPAIR_NAME = 'montage_key'
     SECURITY_GROUP_NAME = 'montage_security_group'
 
-    def initialize(params)
-      super
+    def init_EC2(params)
       @ec2_config = params[:config][:ec2]
 
       if params[:ssh].nil?
@@ -163,39 +162,5 @@ module MontageAWS
         g.allow_ping
       end
     end
-
-  end
-
-
-  class StartEC2InfrastructureProvisioner < StartEc2
-
-    def initialize params
-      super
-    end
-
-    def execute
-      start_and_execute_cmd "montage_aws start_ec2_provisioner -f "
-    end
-  end
-
-  class StartEC2Worker < StartEc2
-    def initialize task, params
-      super params
-    end
-
-    def execute
-      start_and_execute_cmd "montage_aws start_worker -f "
-    end
-  end
-
-  class StartEC2Decider <StartEc2
-    def initialize task, params
-      super params
-    end
-
-    def execute
-      start_and_execute_cmd "montage_aws start_decider -f "
-    end
-
   end
 end
