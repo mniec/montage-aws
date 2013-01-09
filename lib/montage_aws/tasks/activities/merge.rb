@@ -4,7 +4,7 @@ module MontageAWS
   class Merge
     def initialize params
       @activity_task = params[:activity_task]
-      @montage_helper = params[:montage_helper]
+      @montage = params[:montage]
       @s3 = params[:s3]
       @logger = params[:logger]
       @config = params[:config]
@@ -27,10 +27,10 @@ module MontageAWS
 
       download_files projdir, lines
 
-      @montage_helper.make_template template, x, y, h, w
-      @montage_helper.make_list projtbl, projdir
-      @montage_helper.add finalfits, projdir, projtbl, template
-      @montage_helper.grayJPEG finalfits, finaljpeg
+      @montage.make_template template, x, y, h, w
+      @montage.make_list projtbl, projdir
+      @montage.add finalfits, projdir, projtbl, template
+      @montage.grayJPEG finalfits, finaljpeg
       ids = upload_results("#{@activity_task.activity_id}", [finaljpeg])
 
       @activity_task.record_heartbeat! :details => "100%"

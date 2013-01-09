@@ -54,7 +54,7 @@ def create_tasks_factory config, swf, ec2, s3, montage_helper
   }
   Tasks.validate! spec
 
-  Tasks.new spec, :config => config, :swf => swf, :ec2 => ec2, :s3 => s3,  :montage_helper => montage_helper, :logger => $stderr
+  Tasks.new spec, :config => config, :swf => swf, :ec2 => ec2, :s3 => s3,  :montage => montage_helper, :logger => $stderr
 
 end
 
@@ -64,8 +64,8 @@ setup_aws @config
 @swf = create_swf
 @ec2 = create_ec2
 @s3  = create_s3
-@montage_helper = MontageHelper.new
-@tasks = create_tasks_factory @config, @swf, @ec2, @s3, @montage_helper
+@montage = MontageHelper.new
+@tasks = create_tasks_factory @config, @swf, @ec2, @s3, @montage
 
 begin
   cmd = Cmd.new ARGV
