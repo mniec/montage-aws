@@ -5,6 +5,7 @@ module MontageAWS
 
 autoload :Cmd, 'montage_aws/utils/cmd'
 autoload :Montage, 'montage_aws/utils/montage_helper'
+autoload :EC2Utils, 'montage_aws/utils/ec2_utils'
 
 # factories
 autoload :Tasks, 'montage_aws/factory/tasks'
@@ -20,10 +21,7 @@ autoload :Worker, 'montage_aws/tasks/cmd/worker'
 autoload :InfrastructureProvisioner, 'montage_aws/tasks/cmd/infrastructure_provisioner'
 autoload :Decider, 'montage_aws/tasks/cmd/decider'
 autoload :Compute, 'montage_aws/tasks/cmd/compute'
-autoload :StartEc2, 'montage_aws/tasks/cmd/start_ec2'
-autoload :StartEC2InfrastructureProvisioner, 'montage_aws/tasks/cmd/start_ec2'
-autoload :StartEC2Worker, 'montage_aws/tasks/cmd/start_ec2'
-autoload :StartEC2Decider, 'montage_aws/tasks/cmd/start_ec2'
+autoload :StartEC2Worker, 'montage_aws/tasks/activities/start_ec2_worker'
 
 # activities
 autoload :Project, 'montage_aws/tasks/activities/project'
