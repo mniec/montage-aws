@@ -20,7 +20,7 @@ module MontageAWS
     end
 
     def execute
-      start_and_execute_cmd "montage_aws start_decider -f && montage_aws start_provider -f"
+      start_and_execute_cmd "montage_aws start_provider -f ;montage_aws start_decider -f "
     end
   end
 end 
