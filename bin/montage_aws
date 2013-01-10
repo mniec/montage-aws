@@ -43,7 +43,7 @@ activities = {
 spec = {
     :setup => Provision,
     :compute => Compute,
-    :start_daemon => Decider,
+    :start_decider => Decider,
     :start_provider => EC2Provider,
     :start_worker => Worker,
 }
