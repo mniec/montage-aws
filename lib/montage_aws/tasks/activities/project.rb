@@ -1,4 +1,5 @@
 require 'tmpdir'
+require 'fileutils'
 
 module MontageAWS
   class Project < ActivityTask
@@ -32,6 +33,8 @@ module MontageAWS
       
       files = Dir.glob("#{projdir}/*")
       ids = upload_results("#{@activity_task.activity_id}", files)
+
+      FileUtils.remove_dir dir, :force => true
 
       @activity_task.record_heartbeat! :details=> "100%"
       @activity_task.complete! :result => ids.join("\n")
