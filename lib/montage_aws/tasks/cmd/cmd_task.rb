@@ -12,7 +12,7 @@ module MontageAWS
 
     def execute_cmd
       if options[:f]
-        Process.fork { execute }
+        Process.daemon { execute }
       else
         execute
       end
