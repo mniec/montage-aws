@@ -1,4 +1,5 @@
 require 'tmpdir'
+require 'fileutils'
 
 module MontageAWS
   class Merge < ActivityTask
@@ -25,6 +26,8 @@ module MontageAWS
       @montage.add finalfits, projdir, projtbl, template
       @montage.grayJPEG finalfits, finaljpeg
       ids = upload_results("#{@activity_task.activity_id}", [finaljpeg])
+
+      FileUtils.remove_dir dir, :force => true
 
       @activity_task.record_heartbeat! :details => "100%"
       @activity_task.complete! :result => ids.first
