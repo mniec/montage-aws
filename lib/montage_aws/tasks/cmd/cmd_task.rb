@@ -11,11 +11,8 @@ module MontageAWS
     end
 
     def execute_cmd
-      if options[:f]
-        Process.daemon { execute }
-      else
-        execute
-      end
+      Process.daemon() if options[:f]
+      execute
     end
 
     def info msg
