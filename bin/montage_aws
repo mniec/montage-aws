@@ -7,6 +7,23 @@ CONFIG_FILE="#{ENV['HOME']}/.montage_aws.yml"
 
 include MontageAWS
 
+def print_usage
+  $stderr.puts <<-eos
+   montage_aws command [options]
+
+   Commands:
+     setup - connects to amazon and setup SWF
+     compute x y h w [-machines 2] - schedules montage job
+     start_worker - starts worker
+     start_decider - starts decider
+     start_provider - starts provider
+
+   Options:
+     -h - prints this help
+     -f - run as a daemon
+  eos
+end
+
 default_config = {
     :domain => "montage_aws",
     :workflow_name => "mock_computation",
@@ -45,8 +62,14 @@ task_fac = CmdFactory.new(activity_fac, spec, params)
 
 begin
   cmd = Cmd.new ARGV
-  task = task_fac.create_from_cmd cmd
-  task.execute_cmd
+  if cmd.options[:h]
+    print_usage
+    exit 0
+  else
+    task = task_fac.create_from_cmd cmd
+    task.execute_cmd
+  end
 rescue RuntimeError => e
   $stderr.puts "error: #{e.message}"
+  print_usage
 end
