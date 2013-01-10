@@ -14,6 +14,7 @@ def print_usage
    Commands:
      setup - connects to amazon and setup SWF
      compute x y h w [-machines 2] - schedules montage job
+     setup_infrastructure  - starts decider and provider on ec2 instance
      start_worker - starts worker
      start_decider - starts decider
      start_provider - starts provider
@@ -43,6 +44,7 @@ activities = {
 spec = {
     :setup => Provision,
     :compute => Compute,
+    :setup_infrastructure => StartEC2DeciderAndProvider,
     :start_decider => Decider,
     :start_provider => EC2Provider,
     :start_worker => Worker,

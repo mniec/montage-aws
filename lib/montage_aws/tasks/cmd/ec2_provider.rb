@@ -9,4 +9,18 @@ module MontageAWS
       end
     end
   end
+
+
+  class StartEC2DeciderAndProvider< CmdTask
+    include EC2Utils
+
+    def initialize args
+      super
+      init_EC2 args
+    end
+
+    def execute
+      start_and_execute_cmd "montage_aws start_decider -f && montage_aws start_provider -f"
+    end
+  end
 end 
