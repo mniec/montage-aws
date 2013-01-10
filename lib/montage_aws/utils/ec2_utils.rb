@@ -20,6 +20,9 @@ module MontageAWS
         @ssh = params[:ssh]
         @WAIT_TIME = 0
       end
+
+      @priv_key_path = File.join(ENV['HOME'], '.ssh/montage_key.pem')
+      @pub_key_path = File.join(ENV['HOME'], '.ssh/montage_key.pub')
     end
 
     def start_and_execute_cmd command
@@ -38,16 +41,17 @@ module MontageAWS
 
         sleep(@WAIT_TIME) until instance.status == :running
 
-        max_trials = 2
+        max_trials = 3
 
         @logger.puts "INFO: Instance is running, trying to connect to #{instance.ip_address}"
 
         begin
-          session = @ssh.start(instance.ip_address, @ec2_config[:user_name], :keys => [@ec2_config[:key_pair_priv]])
+          session = @ssh.start(instance.ip_address, @ec2_config[:user_name], :keys => [@priv_key_path])
           setup_machine session
           @logger.puts "INFO: Executing #{command}"
-          session.exec! command
+          @logger.puts session.exec! command
           session.close()
+          true
         rescue Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTUNREACH => err
           max_trials-=1
           if max_trials > 0
@@ -57,7 +61,13 @@ module MontageAWS
           else
             @logger.puts "ERROR: #{err}"
           end
-        rescue Net::SSH::AuthenticationFailed
+        rescue Net::SSH::AuthenticationFailed => err
+          max_trials-=1
+          if max_trials > 0
+            @logger.puts("ERROR: AuthenticationFailed #{err} retrying after 10s")
+            sleep 10
+            retry 
+          end
           @logger.puts("ERROR: AuthenticationFailed")
         end
       else
@@ -73,11 +83,20 @@ module MontageAWS
       @logger.puts "INFO: Uploading #{@ec2_config[:montage_gem_file]}"
 
       ssh_session.sftp.connect do |sftp|
-        sftp.upload!(@ec2_config[:montage_gem_file], "/home/#{@ec2_config[:user_name]}/montage_aws-0.0.1.gem")
+        dest_file = "/home/#{@ec2_config[:user_name]}/montage_aws-0.0.2.gem"
+        #uploading from local drive
+        sftp.upload!(@ec2_config[:montage_gem_file], dest_file) if File.exist? @ec2_config[:montage_gem_file]
+        # uploading from ec2 instance 
+        sftp.upload!(dest_file, dest_file) if File.exist? dest_file
+
         sftp.upload!(File.join(ENV['HOME'], ".montage_aws.yml"), "/home/#{@ec2_config[:user_name]}/.montage_aws.yml")
+
+        # very secure ...
+        sftp.upload!(@priv_key_path, "/home/#{@ec2_config[:user_name]}/.ssh/montage_key.pem")
+        sftp.upload!(@pub_key_path, "/home/#{@ec2_config[:user_name]}/.ssh/montage_key.pub")
       end
 
-      puts ssh_session.exec! "sudo gem install --no-ri --no-rdoc montage_aws-0.0.1.gem"
+      puts ssh_session.exec! "sudo gem install --no-ri --no-rdoc montage_aws-0.0.2.gem"
     end
 
     def instance_valid? instance
@@ -107,7 +126,7 @@ module MontageAWS
     end
 
     def key_files_exists?
-      File.exist? @ec2_config[:key_pair_priv]
+      File.exist? @priv_key_path
     end
 
     def setup_keys
@@ -115,8 +134,8 @@ module MontageAWS
         unless @ec2.key_pairs.map(&:name).include?(KEYPAIR_NAME)
           @logger.puts 'INFO: Imporing existing KeyPair'
 
-          if File.exist? @ec2_config[:key_pair_pub]
-            @ec2.key_pairs.import(KEYPAIR_NAME, File.read(@ec2_config[:key_pair_pub]))
+          if File.exist?  @pub_key_path
+            @ec2.key_pairs.import(KEYPAIR_NAME, File.read( @pub_key_path))
           else
             @logger.puts "ERROR: Cannot import keypair public kay doesnt exist"
           end
@@ -125,13 +144,13 @@ module MontageAWS
         begin
           @logger.puts 'INFO: Creating new KeyPair'
           key_pair = @ec2.key_pairs.create(KEYPAIR_NAME)
-          File.open(@ec2_config[:key_pair_priv], "w") do |f|
+          File.open(@priv_key_path, "w") do |f|
             f.write(key_pair.private_key)
           end
 
 
           private_key = OpenSSL::PKey::RSA.new(key_pair.private_key)
-          File.open(@ec2_config[:key_pair_pub], "w") do |f|
+          File.open( @pub_key_path, "w") do |f|
             f.write private_key.public_key.to_pem
           end
 

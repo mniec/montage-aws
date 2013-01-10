@@ -11,6 +11,8 @@ module MontageAWS
     end
 
     def execute
+      @activity_task.record_heartbeat! :details=> "0%"
+
       current_machine = nil 
       @ec2.instances.each  do |i|
         if is_current(i)
@@ -19,6 +21,10 @@ module MontageAWS
           i.terminate() if instance_valid?(i)
         end 
       end 
+
+      @activity_task.record_heartbeat! :details=> "100%"
+      @activity_task.complete!
+      
       current_machine.terminate unless current_machine.nil?
     end
 
