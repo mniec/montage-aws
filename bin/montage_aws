@@ -38,7 +38,8 @@ AWS.config(config[:aws])
 activities = {
     :provision => StartEC2Worker,
     :project => Project,
-    :merge => Merge
+    :merge => Merge,
+    :terminate_instances => TerminateEc2Instances
 }
 
 spec = {
