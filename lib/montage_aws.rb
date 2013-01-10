@@ -28,6 +28,7 @@ autoload :StartEC2Worker, 'montage_aws/tasks/activities/start_ec2_worker'
 # activities
 autoload :Project, 'montage_aws/tasks/activities/project'
 autoload :Merge, 'montage_aws/tasks/activities/merge'
+autoload :TerminateEc2Instances, 'montage_aws/tasks/activities/terminate_ec2_instances'
 
 
 end
