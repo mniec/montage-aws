@@ -29,7 +29,7 @@ module MontageAWS
       params = event.attributes[:input].split(" ")
       x, y, h, w = params[0..3].map { |x| x.to_f }
       machines = params.last.to_i
-      vsn = @config[:workflow_version]
+      vsn = config[:workflow_version]
       1.upto(machines) do
         task.schedule_activity_task({:name => "provision", :version => vsn})
       end
@@ -80,7 +80,8 @@ module MontageAWS
       state = get_state task
       if not state[:output].empty?
         task.complete_workflow_execution :result => state[:output]
-      elsif state[:project_tasks].all? { |t| t } && state[:merge_tasks].size == 0
+      elsif state[:project_tasks].all? { |k,t| t } && state[:merge_tasks].size == 0
+        info "State: #{state.inspect}"
         schedule_merge state[:input], state[:merge_files], task
       end
     end
@@ -88,7 +89,7 @@ module MontageAWS
     def schedule_merge input, files, task
       params = input.split(" ")
       x, y, h, w = params[0..3].map { |x| x.to_f }
-      vsn = @config[:workflow_version]
+      vsn = config[:workflow_version]
       task.schedule_activity_task({:name => "merge", :version => vsn},
                                   :input => "#{x} #{y} #{h} #{w}\n#{files}")
     end
